@@ -7,18 +7,21 @@ use Mayaram\LaravelOcr\Exceptions\AICleanupException;
 
 class AICleanupService
 {
-    protected $app;
-    protected array $config;
+    protected \Illuminate\Contracts\Config\Repository $config;
 
-    public function __construct($app)
+    public function __construct(\Illuminate\Contracts\Config\Repository $config)
     {
-        $this->app = $app;
-        $this->config = $app['config']->get('laravel-ocr.ai_cleanup', []);
+        $this->config = $config;
+    }
+
+    protected function getConfig(string $key, $default = null)
+    {
+        return $this->config->get('laravel-ocr.ai_cleanup.' . $key, $default);
     }
 
     public function clean(array $extractedData, array $options = []): array
     {
-        $provider = $options['provider'] ?? $this->config['default_provider'] ?? 'openai';
+        $provider = $options['provider'] ?? $this->getConfig('default_provider', 'openai');
         
         switch ($provider) {
             case 'openai':
@@ -104,12 +107,14 @@ class AICleanupService
 
     protected function cleanWithOpenAI(array $data, array $options): array
     {
-        if (!isset($this->config['providers']['openai']['api_key'])) {
+        $apiKey = $this->getConfig('providers.openai.api_key');
+        
+        if (!$apiKey) {
             throw new AICleanupException('OpenAI API key not configured');
         }
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $this->config['providers']['openai']['api_key'],
+            'Authorization' => 'Bearer ' . $apiKey,
             'Content-Type' => 'application/json',
         ])->post('https://api.openai.com/v1/chat/completions', [
             'model' => $options['model'] ?? 'gpt-3.5-turbo',
@@ -183,7 +188,7 @@ class AICleanupService
                 break;
                 
             case 'phone':
-                $value = preg_replace('/[^0-9+\-()]/', '', $value);
+                $value = preg_replace('/[^0-9]/', '', $value);
                 break;
         }
         
@@ -202,9 +207,19 @@ class AICleanupService
         
         $normalizedKey = $this->normalizeKey($key);
         
+        // Check top level keys
         foreach ($data as $dataKey => $value) {
             if ($this->normalizeKey($dataKey) === $normalizedKey) {
                 return is_array($value) ? ($value['value'] ?? null) : $value;
+            }
+        }
+
+        // Check fields keys
+        if (isset($data['fields']) && is_array($data['fields'])) {
+            foreach ($data['fields'] as $fieldKey => $fieldValue) {
+                if ($this->normalizeKey($fieldKey) === $normalizedKey) {
+                    return is_array($fieldValue) ? ($fieldValue['value'] ?? null) : $fieldValue;
+                }
             }
         }
         

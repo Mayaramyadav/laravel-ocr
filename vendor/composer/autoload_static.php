@@ -11,20 +11,22 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
-        '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
+        '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
+        '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '2a5e5bba4d7a0bb0a6ded8efc32d9710' => __DIR__ . '/..' . '/orchestra/sidekick/src/Eloquent/functions.php',
         'b4a594f319d5919ec36d5699942321d6' => __DIR__ . '/..' . '/orchestra/sidekick/src/Filesystem/functions.php',
         'ce3eb9cbcd1a122678681a7fec8dfbf4' => __DIR__ . '/..' . '/orchestra/sidekick/src/Http/functions.php',
         '26c36baaceab0736027f3a13d83fc1a6' => __DIR__ . '/..' . '/orchestra/sidekick/src/functions.php',
-        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '35a6ad97d21e794e7e22a17d806652e4' => __DIR__ . '/..' . '/nunomaduro/termwind/src/Functions.php',
         '606a39d89246991a373564698c2d8383' => __DIR__ . '/..' . '/symfony/polyfill-php85/bootstrap.php',
-        '1ff88ee2daa64f07d9a89cd819aa198e' => __DIR__ . '/..' . '/orchestra/testbench-core/src/functions.php',
+        '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
+        'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
+        '1ff88ee2daa64f07d9a89cd819aa198e' => __DIR__ . '/..' . '/orchestra/testbench-core/src/functions.php',
         '2203a247e6fda86070a5e4e07aed533a' => __DIR__ . '/..' . '/symfony/clock/Resources/now.php',
         '09f6b20656683369174dd6fa83b7e5fb' => __DIR__ . '/..' . '/symfony/polyfill-uuid/bootstrap.php',
         'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
@@ -39,12 +41,14 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         '7f7ac2ddea9cc3fb4b2cc201d63dbc10' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Log/functions.php',
         '493c6aea52f6009bab023b26c21a386a' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/functions.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
-        '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
-        '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         'a1cfe24d14977df6878b9bf804af2d1c' => __DIR__ . '/..' . '/nunomaduro/collision/src/Adapters/Phpunit/Autoload.php',
+        '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
+        'aadac1114cab8dc19489a7f6dc24c003' => __DIR__ . '/..' . '/pestphp/pest-plugin-arch/src/Autoload.php',
         'c72349b1fe8d0deeedd3a52e8aa814d8' => __DIR__ . '/..' . '/mockery/mockery/library/helpers.php',
         'ce9671a430e4846b44e1c68c7611f9f5' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery.php',
-        'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
+        'f83ed111c2f97a0449abf067f157f418' => __DIR__ . '/..' . '/pestphp/pest/src/Functions.php',
+        '7d2876738dc0328edeb8a103c76cd8e7' => __DIR__ . '/..' . '/pestphp/pest/src/Pest.php',
+        'd634523d799d97a8ab4807b650bf5cea' => __DIR__ . '/..' . '/pestphp/pest-plugin-laravel/src/Autoload.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -56,9 +60,14 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         array (
             'thiagoalessio\\TesseractOCR\\' => 27,
         ),
+        'p' =>
+        array (
+            'phpDocumentor\\Reflection\\' => 25,
+        ),
         'W' =>
         array (
             'Whoops\\' => 7,
+            'Webmozart\\Assert\\' => 17,
         ),
         'T' =>
         array (
@@ -114,6 +123,14 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
             'Psr\\Clock\\' => 10,
             'PhpParser\\' => 10,
             'PhpOption\\' => 10,
+            'Pest\\Plugin\\' => 12,
+            'Pest\\Mutate\\' => 12,
+            'Pest\\Laravel\\' => 13,
+            'Pest\\Arch\\' => 10,
+            'Pest\\' => 5,
+            'ParaTest\\' => 9,
+            'PHPUnit\\Architecture\\' => 21,
+            'PHPStan\\PhpDocParser\\' => 21,
         ),
         'O' =>
         array (
@@ -132,8 +149,8 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         array (
             'Monolog\\' => 8,
             'Mockery\\' => 8,
-            'Mayaram\\SmartOcr\\Tests\\' => 23,
-            'Mayaram\\SmartOcr\\' => 17,
+            'Mayaram\\LaravelOcr\\Tests\\' => 25,
+            'Mayaram\\LaravelOcr\\' => 19,
         ),
         'L' =>
         array (
@@ -147,6 +164,10 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
             'Laravel\\SerializableClosure\\' => 28,
             'Laravel\\Prompts\\' => 16,
             'Laravel\\Pail\\' => 13,
+        ),
+        'J' =>
+        array (
+            'Jean85\\' => 7,
         ),
         'I' =>
         array (
@@ -166,6 +187,7 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         'F' =>
         array (
             'Fruitcake\\Cors\\' => 15,
+            'Fidry\\CpuCoreCounter\\' => 21,
             'Faker\\' => 6,
         ),
         'E' =>
@@ -176,6 +198,7 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         array (
             'Dotenv\\' => 7,
             'Doctrine\\Inflector\\' => 19,
+            'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\Common\\Lexer\\' => 22,
             'Dflydev\\DotAccessData\\' => 22,
             'DeepCopy\\' => 9,
@@ -202,9 +225,19 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         array (
             0 => __DIR__ . '/..' . '/thiagoalessio/tesseract_ocr/src',
         ),
+        'phpDocumentor\\Reflection\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+        ),
         'Whoops\\' =>
         array (
             0 => __DIR__ . '/..' . '/filp/whoops/src/Whoops',
+        ),
+        'Webmozart\\Assert\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/webmozart/assert/src',
         ),
         'TijsVerkoyen\\CssToInlineStyles\\' =>
         array (
@@ -379,6 +412,38 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
         ),
+        'Pest\\Plugin\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/pestphp/pest-plugin/src',
+        ),
+        'Pest\\Mutate\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/pestphp/pest-plugin-mutate/src',
+        ),
+        'Pest\\Laravel\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/pestphp/pest-plugin-laravel/src',
+        ),
+        'Pest\\Arch\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/pestphp/pest-plugin-arch/src',
+        ),
+        'Pest\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/pestphp/pest/src',
+        ),
+        'ParaTest\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/brianium/paratest/src',
+        ),
+        'PHPUnit\\Architecture\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/ta-tikoma/phpunit-architecture-test/src',
+        ),
+        'PHPStan\\PhpDocParser\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src',
+        ),
         'Orchestra\\Workbench\\' =>
         array (
             0 => __DIR__ . '/..' . '/orchestra/workbench/src',
@@ -416,11 +481,11 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         array (
             0 => __DIR__ . '/..' . '/mockery/mockery/library/Mockery',
         ),
-        'Mayaram\\SmartOcr\\Tests\\' =>
+        'Mayaram\\LaravelOcr\\Tests\\' =>
         array (
             0 => __DIR__ . '/../..' . '/tests',
         ),
-        'Mayaram\\SmartOcr\\' =>
+        'Mayaram\\LaravelOcr\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
@@ -465,6 +530,10 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         array (
             0 => __DIR__ . '/..' . '/laravel/pail/src',
         ),
+        'Jean85\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/jean85/pretty-package-versions/src',
+        ),
         'Intervention\\Image\\' =>
         array (
             0 => __DIR__ . '/..' . '/intervention/image/src',
@@ -507,6 +576,10 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         array (
             0 => __DIR__ . '/..' . '/fruitcake/php-cors/src',
         ),
+        'Fidry\\CpuCoreCounter\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/fidry/cpu-core-counter/src',
+        ),
         'Faker\\' =>
         array (
             0 => __DIR__ . '/..' . '/fakerphp/faker/src/Faker',
@@ -522,6 +595,10 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         'Doctrine\\Inflector\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/inflector/src',
+        ),
+        'Doctrine\\Deprecations\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/deprecations/src',
         ),
         'Doctrine\\Common\\Lexer\\' =>
         array (
@@ -1531,7 +1608,6 @@ class ComposerStaticInit08242d31328741ec68fcd8249d1aeebd
         'PHPUnit\\TextUI\\Output\\Default\\ProgressPrinter\\TestPreparedSubscriber' => __DIR__ . '/..' . '/phpunit/phpunit/src/TextUI/Output/Default/ProgressPrinter/Subscriber/TestPreparedSubscriber.php',
         'PHPUnit\\TextUI\\Output\\Default\\ProgressPrinter\\TestRunnerExecutionStartedSubscriber' => __DIR__ . '/..' . '/phpunit/phpunit/src/TextUI/Output/Default/ProgressPrinter/Subscriber/TestRunnerExecutionStartedSubscriber.php',
         'PHPUnit\\TextUI\\Output\\Default\\ProgressPrinter\\TestSkippedSubscriber' => __DIR__ . '/..' . '/phpunit/phpunit/src/TextUI/Output/Default/ProgressPrinter/Subscriber/TestSkippedSubscriber.php',
-        'PHPUnit\\TextUI\\Output\\Default\\ProgressPrinter\\TestSuiteSkippedSubscriber' => __DIR__ . '/..' . '/phpunit/phpunit/src/TextUI/Output/Default/ProgressPrinter/Subscriber/TestSuiteSkippedSubscriber.php',
         'PHPUnit\\TextUI\\Output\\Default\\ProgressPrinter\\TestTriggeredDeprecationSubscriber' => __DIR__ . '/..' . '/phpunit/phpunit/src/TextUI/Output/Default/ProgressPrinter/Subscriber/TestTriggeredDeprecationSubscriber.php',
         'PHPUnit\\TextUI\\Output\\Default\\ProgressPrinter\\TestTriggeredErrorSubscriber' => __DIR__ . '/..' . '/phpunit/phpunit/src/TextUI/Output/Default/ProgressPrinter/Subscriber/TestTriggeredErrorSubscriber.php',
         'PHPUnit\\TextUI\\Output\\Default\\ProgressPrinter\\TestTriggeredNoticeSubscriber' => __DIR__ . '/..' . '/phpunit/phpunit/src/TextUI/Output/Default/ProgressPrinter/Subscriber/TestTriggeredNoticeSubscriber.php',

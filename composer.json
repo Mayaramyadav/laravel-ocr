@@ -20,7 +20,9 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^10.0|^11.0",
-        "orchestra/testbench": "^8.0|^9.0"
+        "orchestra/testbench": "^8.0|^9.0",
+        "pestphp/pest": "^3.8",
+        "pestphp/pest-plugin-laravel": "^3.2"
     },
     "autoload": {
         "psr-4": {
@@ -43,5 +45,10 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
 }

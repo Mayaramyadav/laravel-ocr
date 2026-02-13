@@ -8,12 +8,12 @@ use Illuminate\Support\Collection;
 
 class TemplateManager
 {
-    protected $app;
+    // protected $app;
 
-    public function __construct($app)
-    {
-        $this->app = $app;
-    }
+    // public function __construct($app)
+    // {
+    //     $this->app = $app;
+    // }
 
     public function create(array $data): DocumentTemplate
     {
@@ -43,10 +43,11 @@ class TemplateManager
         $result = [
             'template_id' => $template->id,
             'template_name' => $template->name,
+            'document_type' => $template->type,
             'fields' => [],
             'raw_text' => $text,
             'metadata' => [
-                'processing_time' => microtime(true) - LARAVEL_START,
+                'processing_time' => microtime(true) - (defined('LARAVEL_START') ? LARAVEL_START : microtime(true)),
                 'template_version' => $template->version ?? '1.0',
             ]
         ];

@@ -233,8 +233,6 @@ final class Collector
         }
 
         $this->testSuiteSkippedEvents[] = $event;
-
-        $this->numberOfTestsRun += $event->testSuite()->count();
     }
 
     public function testSuiteStarted(TestSuiteStarted $event): void

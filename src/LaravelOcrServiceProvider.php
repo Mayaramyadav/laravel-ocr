@@ -21,15 +21,19 @@ class LaravelOcrServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('laravel-ocr.templates', function ($app) {
-            return new TemplateManager($app);
+            return new TemplateManager();
         });
 
         $this->app->singleton('laravel-ocr.ai-cleanup', function ($app) {
-            return new AICleanupService($app);
+            return new AICleanupService($app['config']);
         });
 
         $this->app->singleton('laravel-ocr.parser', function ($app) {
-            return new DocumentParser($app);
+            return new DocumentParser(
+                $app['laravel-ocr'],
+                $app['laravel-ocr.templates'],
+                $app['laravel-ocr.ai-cleanup']
+            );
         });
     }
 

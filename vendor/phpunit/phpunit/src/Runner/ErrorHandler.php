@@ -38,7 +38,8 @@ use PHPUnit\Event\Code\NoTestCaseObjectOnCallStackException;
 use PHPUnit\Event\Code\TestMethod;
 use PHPUnit\Runner\Baseline\Baseline;
 use PHPUnit\Runner\Baseline\Issue;
-use PHPUnit\TextUI\Configuration\Registry as ConfigurationRegistry;
+use PHPUnit\TextUI\Configuration\Registry;
+use PHPUnit\TextUI\Configuration\Source;
 use PHPUnit\TextUI\Configuration\SourceFilter;
 use PHPUnit\Util\ExcludeList;
 
@@ -55,7 +56,7 @@ final class ErrorHandler
     private ?Baseline $baseline               = null;
     private bool $enabled                     = false;
     private ?int $originalErrorReportingLevel = null;
-    private readonly bool $identifyIssueTrigger;
+    private readonly Source $source;
 
     /**
      * @var ?array{functions: list<non-empty-string>, methods: list<array{className: class-string, methodName: non-empty-string}>}
@@ -64,24 +65,12 @@ final class ErrorHandler
 
     public static function instance(): self
     {
-        $source = ConfigurationRegistry::get()->source();
-
-        $identifyIssueTrigger = true;
-
-        if (!$source->identifyIssueTrigger()) {
-            $identifyIssueTrigger = false;
-        }
-
-        if (!$source->notEmpty()) {
-            $identifyIssueTrigger = false;
-        }
-
-        return self::$instance ?? self::$instance = new self($identifyIssueTrigger);
+        return self::$instance ?? self::$instance = new self(Registry::get()->source());
     }
 
-    private function __construct(bool $identifyIssueTrigger)
+    private function __construct(Source $source)
     {
-        $this->identifyIssueTrigger = $identifyIssueTrigger;
+        $this->source = $source;
     }
 
     /**
@@ -270,7 +259,7 @@ final class ErrorHandler
 
     private function trigger(TestMethod $test, bool $filterTrigger): IssueTrigger
     {
-        if (!$this->identifyIssueTrigger) {
+        if (!$this->source->notEmpty()) {
             return IssueTrigger::unknown();
         }
 
