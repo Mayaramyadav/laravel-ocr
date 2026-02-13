@@ -1,0 +1,13 @@
+/vendor
+/node_modules
+/public/storage
+/storage/*.key
+/.idea
+/.vscode
+.env
+.env.backup
+.phpunit.result.cache
+composer.lock
+package-lock.json
+yarn.lock
+phpunit.xml

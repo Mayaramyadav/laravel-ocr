@@ -7,6 +7,7 @@ A powerful Laravel package for OCR and intelligent document parsing with AI-powe
 ## Features
 
 - **Multi-Driver OCR Support**: Tesseract (offline), Google Vision, AWS Textract, Azure OCR
+- **Modern Architecture**: Built with DTOs, Enums, and Strict Typing for robust development
 - **Template Matching System**: Create and share reusable document templates
 - **AI-Powered Cleanup**: Automatic typo correction and data structuring
 - **Multi-Language Support**: Extract text in multiple languages
@@ -37,40 +38,45 @@ php artisan migrate
 
 ## Basic Usage
 
-### Simple OCR Extraction
+### Simple OCR Extraction (Raw)
 
 ```php
 use Mayaram\LaravelOcr\Facades\LaravelOcr;
 
-// Extract text from an image
+// Extract text as array
 $result = LaravelOcr::extract('path/to/document.jpg');
-
-// Extract with specific language
-$result = LaravelOcr::extract('path/to/document.jpg', [
-    'language' => 'spa' // Spanish
-]);
 ```
 
-### Using Templates
+### Full Document Parsing (Recommended)
+
+Use the `DocumentParser` to get a structured `OcrResult` object:
 
 ```php
-// Extract using a specific template
-$result = LaravelOcr::extractWithTemplate('invoice.pdf', $templateId);
+use Mayaram\LaravelOcr\Enums\DocumentType;
 
-// Auto-detect template
 $parser = app('laravel-ocr.parser');
+
 $result = $parser->parse('invoice.pdf', [
-    'auto_detect_template' => true
+    'auto_detect_template' => true,
+    'document_type' => DocumentType::INVOICE
 ]);
+
+// Access data typesafely
+echo $result->text;
+echo $result->confidence;
+$fields = $result->metadata['fields'];
 ```
 
 ### AI Cleanup
 
 ```php
+use Mayaram\LaravelOcr\Enums\DocumentType;
+
 $parser = app('laravel-ocr.parser');
+
 $result = $parser->parse('receipt.jpg', [
     'use_ai_cleanup' => true,
-    'document_type' => 'receipt'
+    'document_type' => DocumentType::RECEIPT
 ]);
 ```
 
@@ -79,9 +85,11 @@ $result = $parser->parse('receipt.jpg', [
 ```php
 $templateManager = app('laravel-ocr.templates');
 
+use Mayaram\LaravelOcr\Enums\DocumentType;
+
 $template = $templateManager->create([
     'name' => 'Standard Invoice',
-    'type' => 'invoice',
+    'type' => DocumentType::INVOICE,
     'fields' => [
         [
             'key' => 'invoice_number',
@@ -119,7 +127,7 @@ $results = $parser->parseBatch($documents, [
 Display extracted document data with the included Blade component:
 
 ```blade
-<x-laravel-ocr::document-preview 
+<x-laravel-ocr::document-preview
     :document="$processedDocument"
     :show-overlay="true"
     :show-actions="true"
@@ -217,9 +225,17 @@ $mapped = $aiCleanup->mapFields($extractedData, [
 ## Pro Version
 
 Upgrade to Pro for:
+
 - Advanced AI cleanup with multiple providers
 - Access to community template marketplace
 - Priority support and updates
 - Advanced language packs
 - Custom OCR model training
-s
+
+## Testing
+
+Run the test suite with Pest:
+
+```bash
+vendor/bin/pest
+```

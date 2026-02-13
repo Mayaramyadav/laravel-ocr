@@ -3,6 +3,7 @@
     "description": "Laravel OCR & Document Data Extractor - A powerful OCR and document parsing engine for Laravel",
     "keywords": ["laravel", "ocr", "document", "parser", "tesseract", "pdf", "invoice", "receipt"],
     "license": "MIT",
+    "version": "1.0.0",
     "type": "library",
     "authors": [
         {
