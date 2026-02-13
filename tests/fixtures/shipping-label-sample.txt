@@ -1,0 +1,37 @@
+FAST SHIPPING EXPRESS
+
+Tracking Number: FE123456789US
+Service: Priority Express
+Date: 2024-03-25
+
+FROM:
+E-Commerce Store Inc.
+Warehouse Facility
+1500 Logistics Blvd
+Phoenix, AZ 85001
+Phone: (602) 555-0123
+
+TO:
+Sarah Johnson
+789 Residential Street, Apt 2B
+Portland, OR 97201
+Phone: (503) 555-0199
+
+Package Details:
+Weight: 2.5 lbs
+Dimensions: 12" x 8" x 4"
+Value: $149.99
+Contents: Electronics
+
+Delivery Options:
+☑ Signature Required
+☐ Leave at Door
+☐ Deliver to Neighbor
+
+Special Instructions:
+Ring doorbell twice. Leave with building manager if not home.
+
+POSTAGE PAID
+EXPRESS MAIL
+
+www.fastshipping.com | 1-800-FAST-SHIP

@@ -1,0 +1,48 @@
+SERVICE AGREEMENT
+
+Contract Number: SA-2024-0001
+Effective Date: April 1, 2024
+Expiration Date: March 31, 2025
+
+PARTIES:
+
+Provider:
+Digital Solutions LLC
+100 Tech Park Drive
+San Francisco, CA 94107
+Tax ID: 98-7654321
+
+Client:
+Manufacturing Corp
+200 Industrial Way
+Detroit, MI 48201
+Tax ID: 12-9876543
+
+TERMS AND CONDITIONS:
+
+1. SERVICES
+Provider agrees to deliver web development and maintenance services
+as outlined in Exhibit A attached hereto.
+
+2. PAYMENT TERMS
+Client agrees to pay $5,000 monthly on the first business day
+of each month. Late payments incur 1.5% monthly penalty.
+
+3. TERM
+This agreement shall commence on April 1, 2024 and continue
+for twelve (12) months unless terminated earlier.
+
+4. TERMINATION
+Either party may terminate with 30 days written notice.
+
+5. CONFIDENTIALITY
+Both parties agree to maintain confidentiality of proprietary
+information shared during the term of this agreement.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement.
+
+Provider: _____________________ Date: __________
+         John Smith, CEO
+
+Client:   _____________________ Date: __________
+         Jane Wilson, CTO

@@ -1,0 +1,92 @@
+{
+    "name": "orchestra/canvas",
+    "description": "Code Generators for Laravel Applications and Packages",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Taylor Otwell",
+            "email": "taylor@laravel.com"
+        },
+        {
+            "name": "Mior Muhammad Zaki",
+            "email": "crynobone@gmail.com"
+        }
+    ],
+    "bin": [
+        "canvas"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Orchestra\\Canvas\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Orchestra\\Canvas\\Tests\\": "tests/",
+            "Illuminate\\Tests\\Integration\\Generators\\": "workbench/tests/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "composer-runtime-api": "^2.2",
+        "composer/semver": "^3.0",
+        "illuminate/console": "^11.43.0",
+        "illuminate/database": "^11.43.0",
+        "illuminate/filesystem": "^11.43.0",
+        "illuminate/support": "^11.43.0",
+        "orchestra/canvas-core": "^9.1.1",
+        "orchestra/sidekick": "^1.0.2",
+        "orchestra/testbench-core": "^9.11.0",
+        "symfony/polyfill-php83": "^1.31",
+        "symfony/yaml": "^7.0.3"
+    },
+    "require-dev": {
+        "laravel/framework": "^11.43.0",
+        "laravel/pint": "^1.21",
+        "mockery/mockery": "^1.6.10",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5.7",
+        "spatie/laravel-ray": "^1.39.1"
+    },
+    "config": {
+        "preferred-install": {
+            "laravel/framework": "source",
+            "*": "auto"
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Orchestra\\Canvas\\LaravelServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "lint": [
+            "@php vendor/bin/pint --ansi",
+            "@php vendor/bin/phpstan analyse --verbose"
+        ],
+        "test": [
+            "@composer dump-autoload",
+            "@php vendor/bin/phpunit --no-coverage --no-configuration --bootstrap vendor/autoload.php --color tests",
+            "@php vendor/bin/phpunit --no-coverage --no-configuration --bootstrap vendor/autoload.php --color workbench/tests"
+        ],
+        "sync": "@php bin/sync",
+        "ci": [
+            "@composer audit",
+            "@prepare",
+            "@lint",
+            "@test"
+        ]
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
+}

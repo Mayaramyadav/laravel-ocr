@@ -1,0 +1,33 @@
+SUPERMARKET PLUS
+789 Shopping Blvd
+Miami, FL 33101
+Phone: (305) 555-0123
+
+*** RECEIPT ***
+
+Store: 0012
+Transaction: T-789456123
+Date: 03/22/2024
+Time: 14:35:42
+Cashier: Sarah M.
+
+Items:
+Bananas (2 lbs)         @$1.29/lb    $2.58
+Milk (1 gal)            @$3.49       $3.49
+Bread (whole wheat)     @$2.99       $2.99
+Eggs (dozen)            @$4.29       $4.29
+Chicken Breast (1.5lb)  @$7.99/lb   $11.99
+Orange Juice            @$3.99       $3.99
+
+Subtotal:                           $29.33
+Tax (6.5%):                         $1.91
+Total:                             $31.24
+
+Payment Method: Credit Card
+Card: ****1234
+Approval: 789456
+
+Thank you for shopping with us!
+Save this receipt for returns
+
+Visit us online: www.supermarketplus.com

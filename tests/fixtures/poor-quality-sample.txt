@@ -1,0 +1,25 @@
+AC ME Corpor@tion
+123 Bu5iness 5treet, 5uite l00
+New Y0rk, NY l000l
+
+1NV01CE
+
+1nvoice #: 1NV-2024-00l
+D@te: J@nu@ry l5, 2024
+Due D@te: Febru@ry l5, 2024
+
+Bi11 T0:
+J0hn D0e
+Tech 501uti0ns 1nc.
+456 C1ient @venue
+
+De5cripti0n                    @m0unt
+Pr0fe55i0n@l 5ervice5         $6,000.00
+C0n5u1ting H0ur5              $2,000.00
+50ftw@re Licen5e              $1,500.00
+
+                     5ubt0t@l: $9,500.00
+                     T@x (8%):   $760.00
+                        T0t@l: $10,260.00
+
+Th@nk y0u f0r y0ur bu5ine55!

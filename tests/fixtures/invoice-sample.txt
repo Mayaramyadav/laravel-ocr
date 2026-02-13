@@ -1,0 +1,36 @@
+ACME Corporation
+123 Business Street, Suite 100
+New York, NY 10001
+Phone: (555) 123-4567
+Email: billing@acme-corp.com
+Tax ID: 12-3456789
+
+INVOICE
+
+Invoice #: INV-2024-001
+Date: January 15, 2024
+Due Date: February 15, 2024
+PO Number: PO-12345
+
+Bill To:
+John Doe
+Tech Solutions Inc.
+456 Client Avenue
+Los Angeles, CA 90001
+
+Ship To:
+Same as billing address
+
+Description                    Qty    Rate      Amount
+Professional Services          40     $150.00   $6,000.00
+Consulting Hours              10     $200.00   $2,000.00
+Software License               1    $1,500.00   $1,500.00
+
+                              Subtotal: $9,500.00
+                              Tax (8%):   $760.00
+                                 Total: $10,260.00
+
+Payment Terms: Net 30
+Payment Method: Check or ACH Transfer
+
+Thank you for your business!

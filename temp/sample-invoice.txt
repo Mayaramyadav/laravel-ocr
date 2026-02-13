@@ -1,0 +1,28 @@
+ACME Corporation
+123 Business Street, Suite 100
+New York, NY 10001
+Phone: (555) 123-4567
+
+INVOICE
+
+Invoice #: INV-2024-001
+Date: January 15, 2024
+Due Date: February 15, 2024
+
+Bill To:
+John Doe
+Tech Solutions Inc.
+456 Client Avenue
+Los Angeles, CA 90001
+
+Item                     Qty    Rate      Amount
+Professional Services     40    $150.00   $6,000.00
+Consulting Hours         10    $200.00   $2,000.00
+Software License          1   $1,500.00   $1,500.00
+
+                        Subtotal: $9,500.00
+                        Tax (8%):   $760.00
+                           Total: $10,260.00
+
+Payment Terms: Net 30
+Thank you for your business!
