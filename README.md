@@ -222,16 +222,6 @@ $mapped = $aiCleanup->mapFields($extractedData, [
 - **Validation**: Built-in MIME type and file size validation
 - **Sanitization**: Automatic input sanitization
 
-## Pro Version
-
-Upgrade to Pro for:
-
-- Advanced AI cleanup with multiple providers
-- Access to community template marketplace
-- Priority support and updates
-- Advanced language packs
-- Custom OCR model training
-
 ## Testing
 
 Run the test suite with Pest:
