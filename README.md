@@ -1,55 +1,67 @@
 # Laravel OCR & Document Data Extractor
 
-A powerful Laravel package for OCR and intelligent document parsing with AI-powered data cleanup, reusable templates, and multi-language support.
+A powerful Laravel package that **reads text from images and PDFs automatically**, understands the data, fixes scanning errors with AI, and gives you clean, structured output.
 
 **Requires PHP 8.2+ and Laravel 9.0+** (including Laravel 12)
 
-## Features
+---
 
-- **Multi-Driver OCR Support**: Tesseract (offline), Google Vision, AWS Textract, Azure OCR
-- **Modern Architecture**: Built with DTOs, Enums, and Strict Typing for robust development
-- **Template Matching System**: Create and share reusable document templates
-- **AI-Powered Cleanup**: Automatic typo correction and data structuring
-- **Multi-Language Support**: Extract text in multiple languages
-- **Laravel Native**: Seamless integration with Eloquent, Queues, and Blade (Laravel 12 compatible)
-- **Privacy-First**: Full offline capability for sensitive documents
-- **Data Extraction**: Automatically extract dates, amounts, emails, phone numbers
-- **Document Preview**: Interactive Blade components for reviewing extracted data
+## ✨ What Can This Package Do?
 
-## Installation
+| Feature                 | Description                                                                 |
+| ----------------------- | --------------------------------------------------------------------------- |
+| 📄 **OCR Extraction**   | Read text from images (JPG, PNG, TIFF, BMP) and PDFs                        |
+| 🤖 **AI Cleanup**       | Automatically fix scanning errors and typos using OpenAI or Anthropic       |
+| 📋 **Templates**        | Create reusable templates to extract specific fields from documents         |
+| 📦 **Batch Processing** | Process hundreds of documents at once                                       |
+| 🌍 **Multi-Language**   | Extract text in English, Spanish, French, German, Chinese, Arabic, and more |
+| 🔒 **Privacy-First**    | Works 100% offline with Tesseract — no data leaves your server              |
+| ⚡ **Queue Support**    | Process documents in the background using Laravel Queues                    |
+| 🧩 **Blade Components** | Built-in UI components to preview extracted data                            |
+
+### Supported Document Types
+
+Invoice · Receipt · Contract · Purchase Order · Shipping · General
+
+---
+
+## 🚀 Installation
+
+### Step 1: Install the Package
 
 ```bash
 composer require mayaram/laravel-ocr
 ```
 
-## Configuration
-
-Publish the configuration file:
+### Step 2: Publish Config & Run Migrations
 
 ```bash
 php artisan vendor:publish --tag=laravel-ocr-config
-```
-
-Run migrations:
-
-```bash
 php artisan migrate
 ```
 
-## Basic Usage
+That's it! You're ready to go. 🎉
 
-### Simple OCR Extraction (Raw)
+---
+
+## 📖 Usage Guide
+
+### 1. Simple OCR — Extract Raw Text
+
+The quickest way to read text from any document:
 
 ```php
 use Mayaram\LaravelOcr\Facades\LaravelOcr;
 
-// Extract text as array
 $result = LaravelOcr::extract('path/to/document.jpg');
+
+echo $result['text'];       // The extracted text
+echo $result['confidence'];  // Accuracy score (0.95 = 95%)
 ```
 
-### Full Document Parsing (Recommended)
+### 2. Smart Parsing — Get Structured Data (Recommended)
 
-Use the `DocumentParser` to get a structured `OcrResult` object:
+Use the `DocumentParser` to automatically detect fields like invoice numbers, amounts, dates, etc:
 
 ```php
 use Mayaram\LaravelOcr\Enums\DocumentType;
@@ -58,37 +70,40 @@ $parser = app('laravel-ocr.parser');
 
 $result = $parser->parse('invoice.pdf', [
     'auto_detect_template' => true,
-    'document_type' => DocumentType::INVOICE
+    'document_type' => DocumentType::INVOICE,
 ]);
 
-// Access data typesafely
-echo $result->text;
-echo $result->confidence;
-$fields = $result->metadata['fields'];
+// Access the result as an OcrResult DTO
+echo $result->text;                     // Full extracted text
+echo $result->confidence;               // Confidence score
+$fields = $result->metadata['fields'];  // Extracted fields (invoice_number, total, etc.)
 ```
 
-### AI Cleanup
+### 3. AI Cleanup — Fix Scanning Errors Automatically
+
+Scanned documents often have errors like `1NV01CE` instead of `INVOICE`. AI cleanup fixes them:
+
+```php
+$result = $parser->parse('poor-quality-scan.pdf', [
+    'use_ai_cleanup' => true,
+    'document_type' => DocumentType::RECEIPT,
+]);
+
+// "1NV01CE #: 1NV-2024-00l" → "INVOICE #: INV-2024-001" ✅
+```
+
+### 4. Templates — Extract Specific Fields Every Time
+
+Create a reusable template once, then use it on all similar documents:
 
 ```php
 use Mayaram\LaravelOcr\Enums\DocumentType;
 
-$parser = app('laravel-ocr.parser');
-
-$result = $parser->parse('receipt.jpg', [
-    'use_ai_cleanup' => true,
-    'document_type' => DocumentType::RECEIPT
-]);
-```
-
-### Creating Templates
-
-```php
 $templateManager = app('laravel-ocr.templates');
 
-use Mayaram\LaravelOcr\Enums\DocumentType;
-
+// Create a template
 $template = $templateManager->create([
-    'name' => 'Standard Invoice',
+    'name' => 'My Invoice Template',
     'type' => DocumentType::INVOICE,
     'fields' => [
         [
@@ -102,29 +117,46 @@ $template = $templateManager->create([
             'label' => 'Total Amount',
             'type' => 'currency',
             'pattern' => '/Total\s*:\s*\$?\s*([0-9,.]+)/i',
-        ]
-    ]
+        ],
+    ],
 ]);
+
+// Use the template on any invoice
+$result = LaravelOcr::extractWithTemplate('new-invoice.pdf', $template->id);
 ```
 
-### Batch Processing
+### 5. Batch Processing — Handle Multiple Documents
+
+Process many documents at once:
 
 ```php
-$documents = [
-    'invoice1.pdf',
-    'invoice2.jpg',
-    'receipt.png'
-];
+$documents = ['invoice1.pdf', 'invoice2.jpg', 'receipt.png'];
 
 $results = $parser->parseBatch($documents, [
     'use_ai_cleanup' => true,
-    'save_to_database' => true
+    'save_to_database' => true,
 ]);
+
+foreach ($results as $result) {
+    echo $result['data']['fields']['invoice_number']['value'];
+}
 ```
 
-## Blade Components
+### 6. Multi-Language Support
 
-Display extracted document data with the included Blade component:
+Extract text from documents in different languages:
+
+```php
+$result = LaravelOcr::extract('spanish-invoice.pdf', [
+    'language' => 'spa',  // Spanish
+]);
+
+// Supported: eng, spa, fra, deu, chi_sim, ara, and many more
+```
+
+### 7. Blade Component — Preview Extracted Data
+
+Display extracted data in your views with the built-in component:
 
 ```blade
 <x-laravel-ocr::document-preview
@@ -134,53 +166,99 @@ Display extracted document data with the included Blade component:
 />
 ```
 
-## Advanced Configuration
+### 8. API Field Mapping — Fuzzy Matching
 
-### Configure OCR Drivers
+Map extracted field names to your own with automatic fuzzy matching:
+
+```php
+$aiCleanup = app('laravel-ocr.ai-cleanup');
+
+$mapped = $aiCleanup->mapFields($extractedData, [
+    'invoice_id' => [
+        'alternatives' => ['invoice_number', 'inv_no', 'bill_number'],
+        'transform' => 'uppercase',
+    ],
+    'amount' => [
+        'field' => 'total',
+        'transform' => 'currency',
+    ],
+]);
+```
+
+---
+
+## 🎛️ Artisan Commands
+
+Process documents and create templates from the command line:
+
+```bash
+# Process a document
+php artisan laravel-ocr:process document.pdf --ai-cleanup --save --output=json
+
+# Process with a specific template
+php artisan laravel-ocr:process invoice.pdf --template=1 --type=invoice
+
+# Create a template interactively
+php artisan laravel-ocr:create-template 'Invoice Template' invoice --interactive
+```
+
+---
+
+## ⚙️ Configuration
+
+### OCR Drivers
+
+This package supports 4 OCR engines. Set your preferred driver in `.env`:
 
 ```env
-# Tesseract (Default - Offline)
+# Tesseract (Default — runs offline, no API needed)
 SMART_OCR_DRIVER=tesseract
 TESSERACT_LANGUAGE=eng
 
-# Google Vision
+# Google Vision (cloud — high accuracy)
 SMART_OCR_DRIVER=google_vision
 GOOGLE_VISION_KEY_FILE=/path/to/credentials.json
 GOOGLE_VISION_PROJECT_ID=your-project-id
 
-# AWS Textract
+# AWS Textract (cloud)
 SMART_OCR_DRIVER=aws_textract
 AWS_ACCESS_KEY_ID=your-key
 AWS_SECRET_ACCESS_KEY=your-secret
 AWS_DEFAULT_REGION=us-east-1
 
-# Azure OCR
+# Azure OCR (cloud)
 SMART_OCR_DRIVER=azure
 AZURE_OCR_ENDPOINT=https://your-resource.cognitiveservices.azure.com/
 AZURE_OCR_KEY=your-key
 ```
 
-### Enable AI Cleanup
+### AI Cleanup
+
+Enable AI-powered error correction:
 
 ```env
 SMART_OCR_AI_CLEANUP=true
-SMART_OCR_AI_PROVIDER=openai
-OPENAI_API_KEY=your-openai-key
+SMART_OCR_AI_PROVIDER=openai        # or 'anthropic'
+OPENAI_API_KEY=your-openai-key       # if using OpenAI
+ANTHROPIC_API_KEY=your-anthropic-key # if using Anthropic
 ```
 
-### Queue Processing
+### Queue (Background Processing)
+
+Process documents asynchronously:
 
 ```env
 SMART_OCR_QUEUE_ENABLED=true
 SMART_OCR_QUEUE_NAME=ocr-processing
 ```
 
-## Workflows
+---
 
-Define custom workflows for specific document types:
+## 🔄 Workflows
+
+Define reusable processing pipelines for different document types in `config/laravel-ocr.php`:
 
 ```php
-// config/laravel-ocr.php
 'workflows' => [
     'invoice' => [
         'options' => [
@@ -191,41 +269,60 @@ Define custom workflows for specific document types:
         'post_processors' => [
             ['class' => 'App\OCR\Processors\InvoiceProcessor'],
         ],
+        'validators' => [
+            ['type' => 'required_fields', 'fields' => ['invoice_number', 'total']],
+        ],
     ],
-]
+],
 
-// Usage
+// Use a workflow
 $result = $parser->parseWithWorkflow('invoice.pdf', 'invoice');
 ```
 
-## API Usage
+---
 
-```php
-// Field mapping with fuzzy matching
-$aiCleanup = app('laravel-ocr.ai-cleanup');
-$mapped = $aiCleanup->mapFields($extractedData, [
-    'invoice_id' => [
-        'alternatives' => ['invoice_number', 'inv_no', 'bill_number'],
-        'transform' => 'uppercase'
-    ],
-    'amount' => [
-        'field' => 'total',
-        'transform' => 'currency'
-    ]
-]);
-```
+## 🔒 Security
 
-## Security
+| Feature                | Description                                                          |
+| ---------------------- | -------------------------------------------------------------------- |
+| **Offline Mode**       | Use Tesseract for complete data privacy — nothing leaves your server |
+| **Encryption**         | Enable `SMART_OCR_ENCRYPT_DATA=true` to encrypt stored documents     |
+| **File Validation**    | Built-in MIME type and file size checks (default: 10MB max)          |
+| **Input Sanitization** | Automatic sanitization of all inputs                                 |
+| **Malware Scanning**   | Optional — enable with `SMART_OCR_SCAN_MALWARE=true`                 |
 
-- **Offline Mode**: Use Tesseract for complete data privacy
-- **Encryption**: Enable data encryption for stored documents
-- **Validation**: Built-in MIME type and file size validation
-- **Sanitization**: Automatic input sanitization
+Supported file formats: **JPG, JPEG, PNG, PDF, TIFF, BMP**
 
-## Testing
+---
+
+## 🧪 Testing
 
 Run the test suite with Pest:
 
 ```bash
 vendor/bin/pest
 ```
+
+---
+
+## 📂 Package Architecture
+
+```
+src/
+├── Console/Commands/        # Artisan commands (process, create-template)
+├── Contracts/               # Interfaces for extensibility
+├── DTOs/                    # OcrResult data transfer object
+├── Drivers/                 # OCR engine drivers
+├── Enums/                   # DocumentType, OcrDriver enums
+├── Exceptions/              # Custom exceptions
+├── Facades/                 # LaravelOcr facade
+├── Models/                  # DocumentTemplate, ProcessedDocument, TemplateField
+└── Services/                # Core services (DocumentParser, OCRManager,
+                             #   TemplateManager, AICleanupService)
+```
+
+---
+
+## 📄 License
+
+MIT
