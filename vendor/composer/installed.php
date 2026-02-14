@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'mayaram/laravel-ocr',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => '08994d61f7a7b54ea22f90f80baea6da3173e82a',
+        'pretty_version' => '1.1.0',
+        'version' => '1.1.0.0',
+        'reference' => null,
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -548,9 +548,9 @@
             'dev_requirement' => false,
         ),
         'mayaram/laravel-ocr' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '08994d61f7a7b54ea22f90f80baea6da3173e82a',
+            'pretty_version' => '1.1.0',
+            'version' => '1.1.0.0',
+            'reference' => null,
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -1518,9 +1518,9 @@
             'dev_requirement' => false,
         ),
         'webmozart/assert' => array(
-            'pretty_version' => '2.1.2',
-            'version' => '2.1.2.0',
-            'reference' => 'ce6a2f100c404b2d32a1dd1270f9b59ad4f57649',
+            'pretty_version' => '2.1.3',
+            'version' => '2.1.3.0',
+            'reference' => '6976757ba8dd70bf8cbaea0914ad84d8b51a9f46',
             'type' => 'library',
             'install_path' => __DIR__ . '/../webmozart/assert',
             'aliases' => array(),
