@@ -21,7 +21,7 @@ class OCRManager extends Manager
         return new GoogleVisionDriver($this->config->get('laravel-ocr.drivers.google_vision', []));
     }
 
-    protected function createAwsTextractDriver(): OCRDriver
+    protected function createAWSTextractDriver(): OCRDriver
     {
         return new AWSTextractDriver($this->config->get('laravel-ocr.drivers.aws_textract', []));
     }
