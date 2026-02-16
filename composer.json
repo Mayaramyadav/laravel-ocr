@@ -2,7 +2,10 @@
   "name": "mayaram/laravel-ocr",
   "description": "Laravel OCR & Document Data Extractor - A powerful OCR and document parsing engine for Laravel",
   "keywords": [
+    "ocr laravel",
     "laravel",
+    "laravel ocr",
+    "Laravel OCR image to text",
     "ocr",
     "document",
     "parser",
@@ -12,7 +15,15 @@
     "receipt",
     "AWS Text Extractor",
     "Google Vision",
-    "Azure OCR"
+    "Azure OCR",
+    "laravel tesseract ocr",
+    "laravel ocr package",
+    "ocr php laravel",
+    "laravel ocr image",
+    "laravel ocr pdf to text",
+    "laravel ocr image to text",
+    "laravel ocr pdf to image to text",
+    "laravel ocr image to pdf to text"
   ],
   "license": "MIT",
   "type": "library",

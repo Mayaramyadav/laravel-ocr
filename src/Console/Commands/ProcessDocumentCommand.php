@@ -4,6 +4,7 @@ namespace Mayaram\LaravelOcr\Console\Commands;
 
 use Illuminate\Console\Command;
 use Mayaram\LaravelOcr\Services\DocumentParser;
+use Illuminate\Support\Facades\File;
 
 class ProcessDocumentCommand extends Command
 {
@@ -17,19 +18,16 @@ class ProcessDocumentCommand extends Command
 
     protected $description = 'Process a document using Smart OCR';
 
-    protected DocumentParser $parser;
-
-    public function __construct(DocumentParser $parser)
+    public function __construct(protected DocumentParser $parser)
     {
         parent::__construct();
-        $this->parser = $parser;
     }
 
     public function handle()
     {
         $documentPath = $this->argument('document');
 
-        if (!file_exists($documentPath)) {
+        if (!File::exists($documentPath)) {
             $this->error("Document not found: {$documentPath}");
             return 1;
         }
@@ -54,6 +52,7 @@ class ProcessDocumentCommand extends Command
 
         try {
             $result = $this->parser->parse($documentPath, $options);
+            $progressBar->setProgress(100);
             $progressBar->finish();
             $this->line('');
 
@@ -74,12 +73,14 @@ class ProcessDocumentCommand extends Command
                     $this->info("Template used: " . $result['metadata']['template_used']);
                 }
             } else {
-                $this->error('Processing failed: ' . $result['error']);
+                $this->error('Processing failed: ' . ($result['error'] ?? 'Unknown error'));
                 return 1;
             }
         } catch (\Exception $e) {
-            $progressBar->finish();
-            $this->line('');
+            if (isset($progressBar)) {
+                $progressBar->finish();
+                $this->line('');
+            }
             $this->error('An error occurred: ' . $e->getMessage());
             return 1;
         }
@@ -105,7 +106,11 @@ class ProcessDocumentCommand extends Command
                 }
             }
 
-            $this->table(['Field', 'Label', 'Value', 'Confidence'], $rows);
+            if (!empty($rows)) {
+                $this->table(['Field', 'Label', 'Value', 'Confidence'], $rows);
+            } else {
+                $this->warn('No structured fields extracted.');
+            }
         }
 
         if (isset($data['document_type'])) {

@@ -4,6 +4,8 @@ namespace Mayaram\LaravelOcr\Console\Commands;
 
 use Illuminate\Console\Command;
 use Mayaram\LaravelOcr\Services\TemplateManager;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 class CreateTemplateCommand extends Command
 {
@@ -14,12 +16,9 @@ class CreateTemplateCommand extends Command
 
     protected $description = 'Create a new document template for OCR processing';
 
-    protected TemplateManager $templateManager;
-
-    public function __construct(TemplateManager $templateManager)
+    public function __construct(protected TemplateManager $templateManager)
     {
         parent::__construct();
-        $this->templateManager = $templateManager;
     }
 
     public function handle()
@@ -44,9 +43,14 @@ class CreateTemplateCommand extends Command
                     break;
                 }
 
+                if (!preg_match('/^[a-z0-9_]+$/', $fieldKey)) {
+                    $this->error('Field key must be snake_case (lowercase letters, numbers, and underscores only).');
+                    continue;
+                }
+
                 $field = [
                     'key' => $fieldKey,
-                    'label' => $this->ask('Field label (human-readable name)'),
+                    'label' => $this->ask('Field label (human-readable name)', Str::headline($fieldKey)),
                     'type' => $this->choice('Field type', [
                         'string', 'numeric', 'date', 'currency', 'email', 'phone'
                     ], 'string'),
@@ -59,7 +63,7 @@ class CreateTemplateCommand extends Command
                 if ($this->confirm('Add validators for this field?')) {
                     $validators = [];
                     
-                    if ($this->confirm('Is this field required?')) {
+                    if ($this->confirm('Is this field required?', true)) {
                         $validators['required'] = true;
                     }
 
@@ -67,11 +71,22 @@ class CreateTemplateCommand extends Command
                         $validators['length'] = (int) $this->ask('Expected length');
                     }
 
+                    if ($field['type'] === 'numeric' && $this->confirm('Must be numeric?')) {
+                        $validators['type'] = 'numeric';
+                    }
+
                     $field['validators'] = $validators;
                 }
 
                 $data['fields'][] = $field;
                 $this->info("Field '{$fieldKey}' added successfully!");
+            }
+        }
+
+        if (empty($data['fields']) && $this->option('interactive')) {
+            $this->warn('No fields were added to the template.');
+            if (!$this->confirm('Do you want to create the template without fields?')) {
+                return 0;
             }
         }
 
@@ -85,10 +100,16 @@ class CreateTemplateCommand extends Command
             );
 
             if ($this->confirm('Would you like to export this template to a file?')) {
-                $filename = $this->ask('Filename', str_slug($name) . '.json');
-                $path = storage_path('app/ocr-templates/' . $filename);
+                $filename = $this->ask('Filename', Str::slug($name) . '.json');
+                $directory = storage_path('app/ocr-templates');
                 
-                file_put_contents($path, $this->templateManager->exportTemplate($template->id));
+                if (!File::exists($directory)) {
+                    File::makeDirectory($directory, 0755, true);
+                }
+
+                $path = $directory . '/' . $filename;
+                
+                File::put($path, $this->templateManager->exportTemplate($template->id));
                 $this->info("Template exported to: {$path}");
             }
         } catch (\Exception $e) {
