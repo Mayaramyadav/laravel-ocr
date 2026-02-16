@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('smart_ocr_templates', function (Blueprint $table) {
+        Schema::create('ocr_templates', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
@@ -25,6 +25,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('smart_ocr_templates');
+        Schema::dropIfExists('ocr_templates');
     }
 };

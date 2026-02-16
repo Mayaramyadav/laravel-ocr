@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Package Accuracy Test - Test Enhanced Laravel Smart OCR
+ * Package Accuracy Test - Test Enhanced Laravel OCR
  * 
  * This tests the actual package with the enhanced line item extraction
  * Usage: php package-accuracy-test.php invoice-0-4.pdf
@@ -23,7 +23,7 @@ if (!file_exists($pdfFile)) {
     exit(1);
 }
 
-echo "🧪 Testing Enhanced Laravel Smart OCR Package\n";
+echo "🧪 Testing Enhanced Laravel OCR Package\n";
 echo str_repeat("=", 60) . "\n";
 echo "📄 File: " . basename($pdfFile) . "\n";
 echo str_repeat("=", 60) . "\n\n";

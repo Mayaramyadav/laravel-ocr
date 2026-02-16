@@ -16,7 +16,7 @@ class CreateTemplateCommand extends Command
 
     protected $description = 'Create a new document template for OCR processing';
 
-    public function __construct(protected TemplateManager $templateManager)
+    public function __construct(protected \Mayaram\LaravelOcr\Services\TemplateManager $templateManager)
     {
         parent::__construct();
     }
@@ -98,22 +98,10 @@ class CreateTemplateCommand extends Command
                 ['ID', 'Name', 'Type', 'Fields Count'],
                 [[$template->id, $template->name, $template->type, $template->fields->count()]]
             );
-
-            if ($this->confirm('Would you like to export this template to a file?')) {
-                $filename = $this->ask('Filename', Str::slug($name) . '.json');
-                $directory = storage_path('app/ocr-templates');
-                
-                if (!File::exists($directory)) {
-                    File::makeDirectory($directory, 0755, true);
-                }
-
-                $path = $directory . '/' . $filename;
-                
-                File::put($path, $this->templateManager->exportTemplate($template->id));
-                $this->info("Template exported to: {$path}");
-            }
         } catch (\Exception $e) {
-            $this->error('Failed to create template: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Create Template Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+            $this->error("Failed to create template: " . $e->getMessage());
             return 1;
         }
 

@@ -12,7 +12,7 @@ return [
     | Supported: "tesseract", "google_vision", "aws_textract", "azure"
     |
     */
-    'default' => env('SMART_OCR_DRIVER', 'tesseract'),
+    'default' => env('LARAVEL_OCR_DRIVER', 'tesseract'),
 
     /*
     |--------------------------------------------------------------------------
@@ -59,8 +59,8 @@ return [
     |
     */
     'ai_cleanup' => [
-        'enabled' => env('SMART_OCR_AI_CLEANUP', false),
-        'default_provider' => env('SMART_OCR_AI_PROVIDER', 'openai'),
+        'enabled' => env('LARAVEL_OCR_AI_CLEANUP', false),
+        'default_provider' => env('LARAVEL_OCR_AI_PROVIDER', 'openai'),
         
         'providers' => [
             'openai' => [
@@ -119,9 +119,9 @@ return [
     |
     */
     'queue' => [
-        'enabled' => env('SMART_OCR_QUEUE_ENABLED', false),
-        'connection' => env('SMART_OCR_QUEUE_CONNECTION', 'default'),
-        'queue' => env('SMART_OCR_QUEUE_NAME', 'ocr-processing'),
+        'enabled' => env('LARAVEL_OCR_QUEUE_ENABLED', false),
+        'connection' => env('LARAVEL_OCR_QUEUE_CONNECTION', 'default'),
+        'queue' => env('LARAVEL_OCR_QUEUE_NAME', 'ocr-processing'),
     ],
 
     /*
@@ -133,7 +133,7 @@ return [
     |
     */
     'storage' => [
-        'disk' => env('SMART_OCR_STORAGE_DISK', 'local'),
+        'disk' => env('LARAVEL_OCR_STORAGE_DISK', 'local'),
         'temp_path' => storage_path('app/temp/ocr'),
         'processed_path' => storage_path('app/processed/ocr'),
         'cleanup_after' => 24, // hours
@@ -148,7 +148,7 @@ return [
     |
     */
     'security' => [
-        'encrypt_stored_data' => env('SMART_OCR_ENCRYPT_DATA', false),
+        'encrypt_stored_data' => env('LARAVEL_OCR_ENCRYPT_DATA', false),
         'allowed_mime_types' => [
             'image/jpeg',
             'image/png',
@@ -156,7 +156,7 @@ return [
             'image/bmp',
             'application/pdf',
         ],
-        'scan_for_malware' => env('SMART_OCR_SCAN_MALWARE', false),
+        'scan_for_malware' => env('LARAVEL_OCR_SCAN_MALWARE', false),
     ],
 
     /*

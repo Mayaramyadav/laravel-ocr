@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TemplateField extends Model
 {
-    protected $table = 'smart_ocr_template_fields';
+    protected $table = 'ocr_template_fields';
 
     protected $fillable = [
         'template_id',

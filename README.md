@@ -14,7 +14,7 @@ A powerful, developer-friendly Laravel package that reads text from images and P
 
 ## ✨ Features
 
-- **🧠 Smart OCR Engine**: Seamlessly switch between **Tesseract** (offline/privacy-first), **Google Vision**, **AWS Textract**, or **Azure AI** drivers.
+- **🧠 Laravel OCR Engine**: Seamlessly switch between **Tesseract** (offline/privacy-first), **Google Vision**, **AWS Textract**, or **Azure AI** drivers.
 - **🤖 AI-Powered Cleanup**: Uses OpenAI or Anthropic to fix OCR typos (e.g., `1NV01CE` -> `INVOICE`) and normalize data formats.
 - **📦 Structured Data Objects**: Returns typed `OcrResult` DTOs, not just extraction arrays.
 - **📑 Advanced Table Extraction**: specialized algorithms to extract line items, quantities, and prices from complex invoice layouts.
@@ -53,7 +53,7 @@ Set your preferred driver and credentials in your `.env` file.
 Calculations are done on your server. No data leaves your infrastructure.
 
 ```env
-SMART_OCR_DRIVER=tesseract
+LARAVEL_OCR_DRIVER=tesseract
 TESSERACT_BINARY=/usr/bin/tesseract
 ```
 
@@ -61,11 +61,11 @@ TESSERACT_BINARY=/usr/bin/tesseract
 
 ```env
 # Google Cloud Vision
-SMART_OCR_DRIVER=google_vision
+LARAVEL_OCR_DRIVER=google_vision
 GOOGLE_VISION_KEY_FILE=/path/to/service-account.json
 
 # AWS Textract
-SMART_OCR_DRIVER=aws_textract
+LARAVEL_OCR_DRIVER=aws_textract
 AWS_ACCESS_KEY_ID=your-key
 AWS_SECRET_ACCESS_KEY=your-secret
 AWS_DEFAULT_REGION=us-east-1
@@ -76,8 +76,8 @@ AWS_DEFAULT_REGION=us-east-1
 Enable AI to fix scanning errors and structure messy data.
 
 ```env
-SMART_OCR_AI_CLEANUP=true
-SMART_OCR_AI_PROVIDER=openai
+LARAVEL_OCR_AI_CLEANUP=true
+LARAVEL_OCR_AI_PROVIDER=openai
 OPENAI_API_KEY=sk-...
 ```
 

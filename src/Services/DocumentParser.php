@@ -280,7 +280,8 @@ class DocumentParser
         
         foreach ($patterns as $pattern) {
             if (preg_match_all($pattern, $text, $matches)) {
-                foreach ($matches[1] as $match) {
+                $matchGroup = $matches[1] ?? [];
+                foreach ($matchGroup as $match) {
                     $value = (float) str_replace(',', '', $match);
                     if ($value > 0) {
                         $amounts[] = [
@@ -477,7 +478,7 @@ class DocumentParser
         $endMarker = 'SUBTOTAL|SUB\s*TOTAL';
         
         if (preg_match("/$startMarker(.*?)$endMarker/si", $text, $matches)) {
-            $itemsSection = $matches[1];
+            $itemsSection = $matches[1] ?? '';
             
             // Split into lines
             $lines = explode("\n", $itemsSection);
@@ -497,8 +498,8 @@ class DocumentParser
                     
                     // Start new item
                     $currentItem = [
-                        'quantity' => intval($matches[1]),
-                        'description' => trim($matches[2]),
+                        'quantity' => intval($matches[1] ?? 0),
+                        'description' => trim($matches[2] ?? ''),
                         'product_code' => '',
                         'unit_price' => 0,
                         'total' => 0
@@ -506,8 +507,8 @@ class DocumentParser
                     
                     // Check if prices are on the same line
                     if (preg_match('/(\d+\.?\d*)\s+(\d+\.?\d*)$/', $currentItem['description'], $priceMatches)) {
-                        $currentItem['unit_price'] = floatval($priceMatches[1]);
-                        $currentItem['total'] = floatval($priceMatches[2]);
+                        $currentItem['unit_price'] = floatval($priceMatches[1] ?? 0);
+                        $currentItem['total'] = floatval($priceMatches[2] ?? 0);
                         $currentItem['description'] = trim(str_replace($priceMatches[0], '', $currentItem['description']));
                     }
                 } 
@@ -520,14 +521,14 @@ class DocumentParser
                     
                     // Check for prices on this line
                     if (preg_match('/(\d+\.?\d*)\s+(\d+\.?\d*)$/', $line, $priceMatches)) {
-                        $currentItem['unit_price'] = floatval($priceMatches[1]);
-                        $currentItem['total'] = floatval($priceMatches[2]);
+                        $currentItem['unit_price'] = floatval($priceMatches[1] ?? 0);
+                        $currentItem['total'] = floatval($priceMatches[2] ?? 0);
                     }
                 }
                 // Pattern 3: Just prices (continuation line)
                 elseif ($currentItem && preg_match('/^\s*(\d+\.?\d*)\s+(\d+\.?\d*)$/', $line, $priceMatches)) {
-                    $currentItem['unit_price'] = floatval($priceMatches[1]);
-                    $currentItem['total'] = floatval($priceMatches[2]);
+                    $currentItem['unit_price'] = floatval($priceMatches[1] ?? 0);
+                    $currentItem['total'] = floatval($priceMatches[2] ?? 0);
                 }
             }
             
@@ -625,33 +626,37 @@ class DocumentParser
         
         // Extract subtotal
         if (preg_match('/SUBTOTAL\s+([\d,]+\.?\d*)/i', $text, $matches)) {
+            $value = str_replace(',', '', $matches[1] ?? '0');
             $totals['subtotal'] = [
-                'amount' => floatval(str_replace(',', '', $matches[1])),
-                'formatted' => '$' . number_format(floatval(str_replace(',', '', $matches[1])), 2)
+                'amount' => floatval($value),
+                'formatted' => '$' . number_format(floatval($value), 2)
             ];
         }
         
         // Extract tax
         if (preg_match('/(?:SALES\s*)?TAX\s+([\d,]+\.?\d*)/i', $text, $matches)) {
+            $value = str_replace(',', '', $matches[1] ?? '0');
             $totals['tax'] = [
-                'amount' => floatval(str_replace(',', '', $matches[1])),
-                'formatted' => '$' . number_format(floatval(str_replace(',', '', $matches[1])), 2)
+                'amount' => floatval($value),
+                'formatted' => '$' . number_format(floatval($value), 2)
             ];
         }
         
         // Extract shipping
         if (preg_match('/SHIPPING\s*&?\s*HANDLING\s+([\d,]+\.?\d*)/i', $text, $matches)) {
+            $value = str_replace(',', '', $matches[1] ?? '0');
             $totals['shipping'] = [
-                'amount' => floatval(str_replace(',', '', $matches[1])),
-                'formatted' => '$' . number_format(floatval(str_replace(',', '', $matches[1])), 2)
+                'amount' => floatval($value),
+                'formatted' => '$' . number_format(floatval($value), 2)
             ];
         }
         
         // Extract total
         if (preg_match('/TOTAL\s*DUE\s+([\d,]+\.?\d*)/i', $text, $matches)) {
+            $value = str_replace(',', '', $matches[1] ?? '0');
             $totals['total'] = [
-                'amount' => floatval(str_replace(',', '', $matches[1])),
-                'formatted' => '$' . number_format(floatval(str_replace(',', '', $matches[1])), 2)
+                'amount' => floatval($value),
+                'formatted' => '$' . number_format(floatval($value), 2)
             ];
         }
         

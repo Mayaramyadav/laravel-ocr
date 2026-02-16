@@ -32,6 +32,6 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
-        <env name="SMART_OCR_DRIVER" value="tesseract"/>
+        <env name="LARAVEL_OCR_DRIVER" value="tesseract"/>
     </php>
 </phpunit>

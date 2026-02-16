@@ -169,11 +169,13 @@ class DocumentParserTest extends TestCase
 
     public function test_it_handles_parsing_errors()
     {
-        $mock = Mockery::mock('overload:' . OCRManager::class);
+        $mock = Mockery::mock('overload:' . \Mayaram\LaravelOcr\Services\OCRManager::class);
         $mock->shouldReceive('extract')
             ->andThrow(new \Exception('OCR failed'));
+        
+        $this->app->instance('laravel-ocr', $mock);
 
-        $result = $this->parser->parse('non-existent-file.pdf');
+        $result = $this->parser->parse($this->getSampleDocument());
 
         $this->assertFalse($result['success']);
         $this->assertArrayHasKey('error', $result);

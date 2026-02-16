@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DocumentTemplate extends Model
 {
-    protected $table = 'smart_ocr_templates';
+    protected $table = 'ocr_templates';
 
     protected $fillable = [
         'name',

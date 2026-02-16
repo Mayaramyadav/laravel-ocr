@@ -460,7 +460,7 @@ class AdvancedInvoiceExtractor
         $html .= "
         <div style='margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 5px;'>
             <h3>🚀 Laravel Integration Ready</h3>
-            <p>This data is now ready to be imported into your Laravel application using the Smart OCR package.</p>
+            <p>This data is now ready to be imported into your Laravel application using the Laravel OCR package.</p>
             <p>All line items, totals, and metadata have been extracted and structured for database storage.</p>
         </div>
     </div>
@@ -542,7 +542,7 @@ $extractor = new AdvancedInvoiceExtractor($outputDir);
 $result = $extractor->extractInvoice($pdfFile);
 
 if ($result && count($result['line_items']) >= 28) {
-    echo "🎉 SUCCESS! All items extracted. Your Laravel Smart OCR package works perfectly!\n";
+    echo "🎉 SUCCESS! All items extracted. Your Laravel OCR package works perfectly!\n";
 } else {
     echo "📝 Extraction complete. Please review the output files to verify all items.\n";
     echo "If items are still missing, check the raw_text.txt file in the output directory.\n";

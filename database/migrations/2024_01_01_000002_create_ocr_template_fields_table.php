@@ -8,9 +8,9 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('smart_ocr_template_fields', function (Blueprint $table) {
+        Schema::create('ocr_template_fields', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('template_id')->constrained('smart_ocr_templates')->onDelete('cascade');
+            $table->foreignId('template_id')->constrained('ocr_templates')->onDelete('cascade');
             $table->string('key', 50);
             $table->string('label');
             $table->string('type', 30)->default('string');
@@ -29,6 +29,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('smart_ocr_template_fields');
+        Schema::dropIfExists('ocr_template_fields');
     }
 };

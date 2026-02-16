@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProcessedDocument extends Model
 {
-    protected $table = 'smart_ocr_processed_documents';
+    protected $table = 'ocr_processed_documents';
 
     protected $fillable = [
         'original_filename',

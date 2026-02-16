@@ -16,12 +16,7 @@ class ProcessDocumentCommand extends Command
                             {--save : Save to database}
                             {--output= : Output format (json, table)}';
 
-    protected $description = 'Process a document using Smart OCR';
-
-    public function __construct(protected DocumentParser $parser)
-    {
-        parent::__construct();
-    }
+    protected $description = 'Process a document using Laravel OCR';
 
     public function handle()
     {
@@ -51,36 +46,45 @@ class ProcessDocumentCommand extends Command
         $progressBar->start();
 
         try {
-            $result = $this->parser->parse($documentPath, $options);
+            /** @var DocumentParser $parser */
+            $parser = $this->laravel->make(DocumentParser::class);
+            
+            /** @var \Mayaram\LaravelOcr\DTOs\OcrResult $result */
+            $result = $parser->parse($documentPath, $options);
+            
             $progressBar->setProgress(100);
             $progressBar->finish();
             $this->line('');
 
-            if ($result['success']) {
-                $this->info('Document processed successfully!');
-                
-                $outputFormat = $this->option('output') ?? 'table';
-                
-                if ($outputFormat === 'json') {
-                    $this->line(json_encode($result['data'], JSON_PRETTY_PRINT));
-                } else {
-                    $this->displayResults($result['data']);
-                }
+            $this->info('Document processed successfully!');
+            
+            $outputFormat = $this->option('output') ?? 'table';
+            
+            $data = [
+                'text' => $result->text,
+                'fields' => $result->metadata['fields'] ?? [],
+                'document_type' => $result->metadata['document_type'] ?? null,
+                'raw_text' => $result->text,
+            ];
 
-                $this->info("\nProcessing time: " . round($result['metadata']['processing_time'], 2) . " seconds");
-                
-                if (isset($result['metadata']['template_used'])) {
-                    $this->info("Template used: " . $result['metadata']['template_used']);
-                }
+            if ($outputFormat === 'json') {
+                $this->line(json_encode($data, JSON_PRETTY_PRINT));
             } else {
-                $this->error('Processing failed: ' . ($result['error'] ?? 'Unknown error'));
-                return 1;
+                $this->displayResults($data);
+            }
+
+            $this->info("\nProcessing time: " . round($result->metadata['processing_time'], 2) . " seconds");
+            
+            if (isset($result->metadata['template_used'])) {
+                $this->info("Template used: " . $result->metadata['template_used']);
             }
         } catch (\Exception $e) {
             if (isset($progressBar)) {
                 $progressBar->finish();
                 $this->line('');
             }
+            \Illuminate\Support\Facades\Log::error('OCR Command Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
             $this->error('An error occurred: ' . $e->getMessage());
             return 1;
         }
@@ -117,9 +121,13 @@ class ProcessDocumentCommand extends Command
             $this->info("\nDocument Type: " . $data['document_type']);
         }
 
-        if (isset($data['raw_text']) && $this->confirm('Show raw extracted text?')) {
-            $this->line("\nRaw Text:");
-            $this->line($data['raw_text']);
+        if (isset($data['raw_text']) && ($this->option('output') ?? 'table') !== 'json') {
+            if ($this->input->isInteractive() && !$this->option('no-interaction')) {
+                if ($this->confirm('Show raw extracted text?', false)) {
+                    $this->line("\nRaw Text:");
+                    $this->line($data['raw_text']);
+                }
+            }
         }
     }
 }

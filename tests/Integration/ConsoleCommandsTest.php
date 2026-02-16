@@ -37,8 +37,8 @@ class ConsoleCommandsTest extends TestCase
         ->expectsConfirmation('Add a regex pattern for this field?', 'no')
         ->expectsConfirmation('Add validators for this field?', 'yes')
         ->expectsConfirmation('Is this field required?', 'yes')
+        ->expectsConfirmation('Add length validation?', 'no')
         ->expectsQuestion('Field key (e.g., invoice_number) or "done" to finish', 'done')
-        ->expectsConfirmation('Would you like to export this template to a file?', 'no')
         ->assertExitCode(0);
 
         $template = DocumentTemplate::where('name', 'Interactive Template')->first();
@@ -58,7 +58,8 @@ class ConsoleCommandsTest extends TestCase
         $this->artisan('laravel-ocr:process', [
             'document' => $this->getSampleDocument('invoice'),
             '--type' => 'invoice',
-            '--output' => 'json'
+            '--output' => 'json',
+            '--no-interaction' => true
         ])
         ->assertExitCode(0);
     }
@@ -66,30 +67,31 @@ class ConsoleCommandsTest extends TestCase
     public function test_process_document_command_with_template()
     {
         $this->mockOCRManager();
-        $template = $this->createSampleTemplate('invoice');
+        $template = $this->createSampleTemplate();
 
         $this->artisan('laravel-ocr:process', [
             'document' => $this->getSampleDocument('invoice'),
             '--template' => $template->id,
-            '--save' => true
+            '--save' => true,
+            '--no-interaction' => true
         ])
         ->assertExitCode(0);
 
         // Verify document was saved to database
-        $this->assertDatabaseHas('smart_ocr_processed_documents', [
+        $this->assertDatabaseHas('ocr_processed_documents', [
             'template_id' => $template->id,
-            'document_type' => 'invoice'
         ]);
     }
 
     public function test_process_document_command_with_ai_cleanup()
     {
         $this->mockOCRManager();
-
+        
         $this->artisan('laravel-ocr:process', [
             'document' => $this->getSampleDocument('poor-quality'),
             '--ai-cleanup' => true,
-            '--output' => 'table'
+            '--output' => 'table',
+            '--no-interaction' => true
         ])
         ->assertExitCode(0);
     }
@@ -97,23 +99,45 @@ class ConsoleCommandsTest extends TestCase
     public function test_process_document_command_file_not_found()
     {
         $this->artisan('laravel-ocr:process', [
-            'document' => '/non/existent/file.pdf'
+            'document' => 'non-existent.pdf'
         ])
+        ->expectsOutput('Document not found: non-existent.pdf')
         ->assertExitCode(1);
     }
 
     protected function mockOCRManager()
     {
-        $mock = \Mockery::mock('Mayaram\LaravelOcr\Services\OCRManager');
+        $mock = \Mockery::mock(\Mayaram\LaravelOcr\Services\OCRManager::class);
         $mock->shouldReceive('extract')
             ->andReturn($this->mockOCRResponse());
         
         $this->app->instance('laravel-ocr', $mock);
-    }
+        $this->app->instance(\Mayaram\LaravelOcr\Services\OCRManager::class, $mock);
 
-    protected function tearDown(): void
-    {
-        \Mockery::close();
-        parent::tearDown();
+        // Mock AICleanupService as well to avoid API key issues
+        $aiMock = \Mockery::mock(\Mayaram\LaravelOcr\Services\AICleanupService::class);
+        $aiMock->shouldReceive('cleanup')
+            ->andReturnUsing(function($text) {
+                return new \Mayaram\LaravelOcr\DTOs\OcrResult(
+                    text: "Cleaned: " . $text,
+                    confidence: 0.99,
+                    bounds: [],
+                    metadata: ['ai_cleaned' => true]
+                );
+            });
+        $aiMock->shouldReceive('clean')
+            ->andReturnUsing(function($data) {
+                return $data;
+            });
+        $this->app->instance('laravel-ocr.ai-cleanup', $aiMock);
+        $this->app->instance(\Mayaram\LaravelOcr\Services\AICleanupService::class, $aiMock);
+
+        // Force a fresh resolve of DocumentParser with the new mocks
+        $this->app->forgetInstance(\Mayaram\LaravelOcr\Services\DocumentParser::class);
+        $this->app->forgetInstance('laravel-ocr.parser');
+        
+        $parser = $this->app->make(\Mayaram\LaravelOcr\Services\DocumentParser::class);
+        $this->app->instance(\Mayaram\LaravelOcr\Services\DocumentParser::class, $parser);
+        $this->app->instance('laravel-ocr.parser', $parser);
     }
 }

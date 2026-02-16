@@ -8,12 +8,12 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('smart_ocr_processed_documents', function (Blueprint $table) {
+        Schema::create('ocr_processed_documents', function (Blueprint $table) {
             $table->id();
             $table->string('original_filename');
             $table->string('document_type', 50)->nullable();
             $table->json('extracted_data');
-            $table->foreignId('template_id')->nullable()->constrained('smart_ocr_templates')->nullOnDelete();
+            $table->foreignId('template_id')->nullable()->constrained('ocr_templates')->nullOnDelete();
             $table->decimal('confidence_score', 3, 2)->default(0);
             $table->decimal('processing_time', 8, 3)->default(0);
             $table->unsignedBigInteger('user_id')->nullable();
@@ -30,6 +30,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('smart_ocr_processed_documents');
+        Schema::dropIfExists('ocr_processed_documents');
     }
 };
