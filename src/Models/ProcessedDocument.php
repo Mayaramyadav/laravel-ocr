@@ -39,7 +39,13 @@ class ProcessedDocument extends Model
 
     public function getFieldValue($fieldKey)
     {
-        return data_get($this->extracted_data, "fields.{$fieldKey}.value");
+        $field = data_get($this->extracted_data, "fields.{$fieldKey}");
+        
+        if (is_array($field)) {
+            return $field['value'] ?? null;
+        }
+        
+        return $field;
     }
 
     public function getAllFieldValues(): array

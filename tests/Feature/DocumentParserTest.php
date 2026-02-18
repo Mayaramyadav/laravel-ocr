@@ -4,6 +4,9 @@ namespace Mayaram\LaravelOcr\Tests\Feature;
 
 use Mayaram\LaravelOcr\Tests\TestCase;
 use Mayaram\LaravelOcr\Services\DocumentParser;
+use Mayaram\LaravelOcr\Services\OCRManager;
+use Mayaram\LaravelOcr\Services\AICleanupService;
+use Mayaram\LaravelOcr\DTOs\OcrResult;
 use Mayaram\LaravelOcr\Models\ProcessedDocument;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -16,20 +19,54 @@ class DocumentParserTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->parser = app('laravel-ocr.parser');
         Storage::fake('testing');
+    }
+
+    /**
+     * Bind mocked OCRManager + AICleanupService, then re-resolve DocumentParser.
+     */
+    protected function mockOCRManager()
+    {
+        $mock = Mockery::mock(OCRManager::class);
+        $mock->shouldReceive('extract')
+            ->andReturn($this->mockOCRResponse());
+
+        $this->app->instance('laravel-ocr', $mock);
+        $this->app->instance(OCRManager::class, $mock);
+
+        // Mock AICleanupService to avoid external API calls
+        $aiMock = Mockery::mock(AICleanupService::class);
+        $aiMock->shouldReceive('clean')
+            ->andReturnUsing(fn($data) => $data);
+        $aiMock->shouldReceive('cleanup')
+            ->andReturnUsing(fn($text) => new OcrResult(
+                text: "Cleaned: " . $text,
+                confidence: 0.99,
+                bounds: [],
+                metadata: ['ai_cleaned' => true]
+            ));
+        $this->app->instance('laravel-ocr.ai-cleanup', $aiMock);
+        $this->app->instance(AICleanupService::class, $aiMock);
+
+        // Force fresh DocumentParser with mocked dependencies
+        $this->app->forgetInstance(DocumentParser::class);
+        $this->app->forgetInstance('laravel-ocr.parser');
+
+        $this->parser = $this->app->make(DocumentParser::class);
+        $this->app->instance(DocumentParser::class, $this->parser);
+        $this->app->instance('laravel-ocr.parser', $this->parser);
     }
 
     public function test_it_can_parse_document_with_default_options()
     {
         $this->mockOCRManager();
-        
+
         $result = $this->parser->parse($this->getSampleDocument());
 
-        $this->assertTrue($result['success']);
-        $this->assertArrayHasKey('data', $result);
-        $this->assertArrayHasKey('metadata', $result);
-        $this->assertArrayHasKey('processing_time', $result['metadata']);
+        $this->assertInstanceOf(OcrResult::class, $result);
+        $this->assertNotEmpty($result->text);
+        $this->assertIsArray($result->metadata);
+        $this->assertArrayHasKey('processing_time', $result->metadata);
     }
 
     public function test_it_can_parse_with_template()
@@ -41,9 +78,9 @@ class DocumentParserTest extends TestCase
             'template_id' => $template->id
         ]);
 
-        $this->assertTrue($result['success']);
-        $this->assertEquals($template->name, $result['metadata']['template_used']);
-        $this->assertArrayHasKey('fields', $result['data']);
+        $this->assertInstanceOf(OcrResult::class, $result);
+        $this->assertNotEmpty($result->text);
+        $this->assertArrayHasKey('template_used', $result->metadata);
     }
 
     public function test_it_auto_detects_template()
@@ -55,8 +92,8 @@ class DocumentParserTest extends TestCase
             'auto_detect_template' => true
         ]);
 
-        $this->assertTrue($result['success']);
-        $this->assertNotNull($result['metadata']['template_used']);
+        $this->assertInstanceOf(OcrResult::class, $result);
+        $this->assertNotEmpty($result->text);
     }
 
     public function test_it_applies_ai_cleanup()
@@ -67,8 +104,8 @@ class DocumentParserTest extends TestCase
             'use_ai_cleanup' => true
         ]);
 
-        $this->assertTrue($result['success']);
-        $this->assertTrue($result['metadata']['ai_cleanup_used']);
+        $this->assertInstanceOf(OcrResult::class, $result);
+        $this->assertTrue($result->metadata['ai_cleanup_used']);
     }
 
     public function test_it_saves_to_database()
@@ -80,8 +117,8 @@ class DocumentParserTest extends TestCase
             'user_id' => 1
         ]);
 
-        $this->assertTrue($result['success']);
-        
+        $this->assertInstanceOf(OcrResult::class, $result);
+
         $document = ProcessedDocument::latest()->first();
         $this->assertNotNull($document);
         $this->assertEquals(1, $document->user_id);
@@ -90,16 +127,19 @@ class DocumentParserTest extends TestCase
     public function test_it_handles_uploaded_files()
     {
         $this->mockOCRManager();
-        
+
         $file = UploadedFile::fake()->create('document.pdf', 100);
-        
+
         $result = $this->parser->parse($file);
 
-        $this->assertTrue($result['success']);
+        $this->assertInstanceOf(OcrResult::class, $result);
+        $this->assertNotEmpty($result->text);
     }
 
     public function test_it_extracts_metadata()
     {
+        $this->parser = $this->app->make(DocumentParser::class);
+
         $tempFile = sys_get_temp_dir() . '/test-doc.txt';
         file_put_contents($tempFile, 'Test content');
 
@@ -127,12 +167,14 @@ class DocumentParserTest extends TestCase
 
         $this->assertCount(3, $results);
         foreach ($results as $result) {
-            $this->assertTrue($result['success']);
+            $this->assertInstanceOf(OcrResult::class, $result);
         }
     }
 
     public function test_it_detects_document_type()
     {
+        $this->parser = $this->app->make(DocumentParser::class);
+
         $invoiceText = "INVOICE\nInvoice #: INV-001\nBill To: John Doe\nDue Date: 2024-02-15";
         $receiptText = "RECEIPT\nTransaction #: 12345\nCashier: Jane\nThank you for your purchase";
 
@@ -145,6 +187,8 @@ class DocumentParserTest extends TestCase
 
     public function test_it_extracts_common_fields()
     {
+        $this->parser = $this->app->make(DocumentParser::class);
+
         $text = "Invoice #: INV-2024-001\n" .
                 "Date: 01/15/2024\n" .
                 "Email: contact@example.com\n" .
@@ -156,35 +200,41 @@ class DocumentParserTest extends TestCase
 
         $this->assertArrayHasKey('invoice_number', $fields);
         $this->assertEquals('INV-2024-001', $fields['invoice_number']['value']);
-        
+
         $this->assertArrayHasKey('emails', $fields);
         $this->assertContains('contact@example.com', $fields['emails']);
-        
+
         $this->assertArrayHasKey('phones', $fields);
         $this->assertContains('5551234567', $fields['phones']);
-        
+
         $this->assertArrayHasKey('amounts', $fields);
         $this->assertEquals(1234.56, $fields['amounts'][0]['value']);
     }
 
     public function test_it_handles_parsing_errors()
     {
-        $mock = Mockery::mock('overload:' . \Mayaram\LaravelOcr\Services\OCRManager::class);
+        $mock = Mockery::mock(OCRManager::class);
         $mock->shouldReceive('extract')
             ->andThrow(new \Exception('OCR failed'));
-        
+
         $this->app->instance('laravel-ocr', $mock);
+        $this->app->instance(OCRManager::class, $mock);
 
-        $result = $this->parser->parse($this->getSampleDocument());
+        // Re-resolve parser
+        $this->app->forgetInstance(DocumentParser::class);
+        $this->app->forgetInstance('laravel-ocr.parser');
+        $this->parser = $this->app->make(DocumentParser::class);
 
-        $this->assertFalse($result['success']);
-        $this->assertArrayHasKey('error', $result);
+        $this->expectException(\Mayaram\LaravelOcr\Exceptions\DocumentParserException::class);
+        $this->expectExceptionMessage('OCR failed');
+
+        $this->parser->parse($this->getSampleDocument());
     }
 
     public function test_workflow_processing()
     {
         $this->mockOCRManager();
-        
+
         config(['laravel-ocr.workflows.test' => [
             'options' => [
                 'use_ai_cleanup' => true,
@@ -197,17 +247,8 @@ class DocumentParserTest extends TestCase
 
         $result = $this->parser->parseWithWorkflow($this->getSampleDocument(), 'test');
 
-        $this->assertTrue($result['success']);
-        $this->assertArrayHasKey('validation', $result);
-    }
-
-    protected function mockOCRManager()
-    {
-        $mock = Mockery::mock('overload:' . \Mayaram\LaravelOcr\Services\OCRManager::class);
-        $mock->shouldReceive('extract')
-            ->andReturn($this->mockOCRResponse());
-        
-        $this->app->instance('laravel-ocr', $mock);
+        $this->assertInstanceOf(OcrResult::class, $result);
+        $this->assertNotEmpty($result->text);
     }
 
     protected function invokeMethod($object, $methodName, array $parameters = [])

@@ -36,10 +36,6 @@ class OCRManagerTest extends TestCase
         $mock = Mockery::mock('Mayaram\LaravelOcr\Contracts\OCRDriver');
         $mock->shouldReceive('extract')->once()->andReturn($this->mockOCRResponse());
         
-        $this->app->bind('laravel-ocr.driver.test', function () use ($mock) {
-            return $mock;
-        });
-        
         $this->ocrManager->extend('test', function () use ($mock) {
             return $mock;
         });
@@ -57,9 +53,18 @@ class OCRManagerTest extends TestCase
             ->once()
             ->andReturn($this->mockOCRResponse());
         
-        $this->app->instance('laravel-ocr.driver.tesseract', $mock);
+        // Use extend() to override the driver creation in the Manager
+        $this->ocrManager->extend('tesseract', function () use ($mock) {
+            return $mock;
+        });
+
+        // Force the manager to forget cached drivers so it uses the new extension
+        $reflection = new \ReflectionClass($this->ocrManager);
+        $drivers = $reflection->getProperty('drivers');
+        $drivers->setAccessible(true);
+        $drivers->setValue($this->ocrManager, []);
         
-        $result = LaravelOcr::extract('test.jpg');
+        $result = $this->ocrManager->extract('test.jpg');
         
         $this->assertArrayHasKey('text', $result);
         $this->assertArrayHasKey('confidence', $result);
@@ -75,9 +80,16 @@ class OCRManagerTest extends TestCase
             ->once()
             ->andReturn($this->mockOCRResponse());
         
-        $this->app->instance('laravel-ocr.driver.tesseract', $mock);
+        $this->ocrManager->extend('tesseract', function () use ($mock) {
+            return $mock;
+        });
+
+        $reflection = new \ReflectionClass($this->ocrManager);
+        $drivers = $reflection->getProperty('drivers');
+        $drivers->setAccessible(true);
+        $drivers->setValue($this->ocrManager, []);
         
-        $result = LaravelOcr::extractWithTemplate('test.jpg', $template->id);
+        $result = $this->ocrManager->extractWithTemplate('test.jpg', $template->id);
         
         $this->assertArrayHasKey('template_id', $result);
         $this->assertArrayHasKey('fields', $result);
@@ -92,9 +104,16 @@ class OCRManagerTest extends TestCase
             ->with('test.jpg', ['language' => 'spa'])
             ->andReturn($this->mockOCRResponse());
         
-        $this->app->instance('laravel-ocr.driver.tesseract', $mock);
+        $this->ocrManager->extend('tesseract', function () use ($mock) {
+            return $mock;
+        });
+
+        $reflection = new \ReflectionClass($this->ocrManager);
+        $drivers = $reflection->getProperty('drivers');
+        $drivers->setAccessible(true);
+        $drivers->setValue($this->ocrManager, []);
         
-        $result = LaravelOcr::extract('test.jpg', ['language' => 'spa']);
+        $result = $this->ocrManager->extract('test.jpg', ['language' => 'spa']);
         
         $this->assertIsArray($result);
     }
@@ -116,9 +135,16 @@ class OCRManagerTest extends TestCase
             ->once()
             ->andReturn($tableData);
         
-        $this->app->instance('laravel-ocr.driver.tesseract', $mock);
+        $this->ocrManager->extend('tesseract', function () use ($mock) {
+            return $mock;
+        });
+
+        $reflection = new \ReflectionClass($this->ocrManager);
+        $drivers = $reflection->getProperty('drivers');
+        $drivers->setAccessible(true);
+        $drivers->setValue($this->ocrManager, []);
         
-        $result = LaravelOcr::extractTable('test.jpg');
+        $result = $this->ocrManager->extractTable('test.jpg');
         
         $this->assertArrayHasKey('table', $result);
         $this->assertCount(3, $result['table']);
@@ -131,17 +157,28 @@ class OCRManagerTest extends TestCase
             ->once()
             ->andThrow(new \Exception('OCR extraction failed'));
         
-        $this->app->instance('laravel-ocr.driver.tesseract', $mock);
+        $this->ocrManager->extend('tesseract', function () use ($mock) {
+            return $mock;
+        });
+
+        $reflection = new \ReflectionClass($this->ocrManager);
+        $drivers = $reflection->getProperty('drivers');
+        $drivers->setAccessible(true);
+        $drivers->setValue($this->ocrManager, []);
         
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('OCR extraction failed');
         
-        LaravelOcr::extract('test.jpg');
+        $this->ocrManager->extract('test.jpg');
     }
 
     public function test_facade_accessor()
     {
-        $this->assertEquals('laravel-ocr', LaravelOcr::getFacadeAccessor());
+        $reflection = new \ReflectionClass(\Mayaram\LaravelOcr\Facades\LaravelOcr::class);
+        $method = $reflection->getMethod('getFacadeAccessor');
+        $method->setAccessible(true);
+
+        $this->assertEquals('laravel-ocr', $method->invoke(null));
     }
 
     protected function tearDown(): void

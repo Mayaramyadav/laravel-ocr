@@ -46,8 +46,8 @@ class TesseractDriverTest extends TestCase
 
     public function test_it_prepares_documents_correctly()
     {
-        // Test with existing file
-        $tempFile = sys_get_temp_dir() . '/test.txt';
+        // Test with existing image file (supported format)
+        $tempFile = sys_get_temp_dir() . '/test.jpg';
         file_put_contents($tempFile, 'test');
         
         $prepared = $this->invokeMethod($this->driver, 'prepareDocument', [$tempFile]);

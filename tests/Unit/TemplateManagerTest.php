@@ -73,7 +73,9 @@ class TemplateManagerTest extends TestCase
     public function test_it_extracts_field_values_with_patterns()
     {
         $template = $this->createSampleTemplate();
-        $field = $template->fields->first();
+        $field = $template->fields->firstWhere('key', 'invoice_number');
+        
+        $this->assertNotNull($field, 'invoice_number field should exist');
         
         $text = "Invoice #: INV-2024-001\nDate: 01/15/2024";
         
