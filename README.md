@@ -77,6 +77,11 @@ LARAVEL_OCR_DRIVER=aws_textract
 AWS_ACCESS_KEY_ID=your-key
 AWS_SECRET_ACCESS_KEY=your-secret
 AWS_DEFAULT_REGION=us-east-1
+
+# Azure Computer Vision
+LARAVEL_OCR_DRIVER=azure
+AZURE_OCR_ENDPOINT=https://your-resource.cognitiveservices.azure.com
+AZURE_OCR_KEY=your-subscription-key
 ```
 
 ### AI Cleanup (via Laravel AI)
