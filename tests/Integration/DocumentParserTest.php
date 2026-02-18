@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Mockery\MockInterface;
 
 use Illuminate\Support\Facades\Http;
+use Laravel\Ai\Ai;
 
 beforeEach(function () {
     // Reset mocks
@@ -17,22 +18,15 @@ beforeEach(function () {
     config(['laravel-ocr.ai_cleanup.providers.openai.api_key' => 'test-key']);
     
     // Mock OpenAI API
-    Http::fake([
-        'api.openai.com/*' => Http::response([
-            'choices' => [
-                [
-                    'message' => [
-                        'content' => json_encode([
-                            'text' => "Cleaned Invoice\nACME Corporation\nINVOICE #: INV-2024-001",
-                            'fields' => [
-                                'invoice_number' => 'INV-2024-001',
-                                'total' => 1000.00
-                            ]
-                        ])
-                    ]
-                ]
+    // Mock AI Agent
+    Ai::fakeAgent(\Mayaram\LaravelOcr\Agents\CleanupAgent::class, [
+        json_encode([
+            'text' => "Cleaned Invoice\nACME Corporation\nINVOICE #: INV-2024-001",
+            'fields' => [
+                'invoice_number' => 'INV-2024-001',
+                'total' => 1000.00
             ]
-        ], 200)
+        ])
     ]);
 });
 

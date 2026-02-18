@@ -1,4 +1,5 @@
 /vendor
+/vendor/*
 /node_modules
 /public/storage
 /storage/*.key
@@ -11,3 +12,5 @@ composer.lock
 package-lock.json
 yarn.lock
 phpunit.xml
+
+

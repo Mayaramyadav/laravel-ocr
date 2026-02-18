@@ -4,6 +4,8 @@ namespace Mayaram\LaravelOcr\Tests;
 
 use Orchestra\Testbench\TestCase as Orchestra;
 use Mayaram\LaravelOcr\LaravelOcrServiceProvider;
+use Laravel\Ai\AiServiceProvider;
+use Prism\Prism\PrismServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 abstract class TestCase extends Orchestra
@@ -21,6 +23,8 @@ abstract class TestCase extends Orchestra
     {
         return [
             LaravelOcrServiceProvider::class,
+            AiServiceProvider::class,
+            PrismServiceProvider::class,
         ];
     }
 
@@ -28,6 +32,7 @@ abstract class TestCase extends Orchestra
     {
         return [
             'LaravelOcr' => \Mayaram\LaravelOcr\Facades\LaravelOcr::class,
+            'Ai' => \Laravel\Ai\Ai::class,
         ];
     }
 

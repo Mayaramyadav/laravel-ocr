@@ -15,7 +15,7 @@ A powerful, developer-friendly Laravel package that reads text from images and P
 ## ✨ Features
 
 - **🧠 Laravel OCR Engine**: Seamlessly switch between **Tesseract** (offline/privacy-first), **Google Vision**, **AWS Textract**, or **Azure AI** drivers.
-- **🤖 AI-Powered Cleanup**: Uses OpenAI or Anthropic to fix OCR typos (e.g., `1NV01CE` -> `INVOICE`) and normalize data formats.
+- **🤖 AI-Powered Cleanup**: Uses `laravel/ai` (OpenAI, Anthropic, Ollama) to fix OCR typos (e.g., `1NV01CE` -> `INVOICE`) and normalize data formats.
 - **📦 Structured Data Objects**: Returns typed `OcrResult` DTOs, not just extraction arrays.
 - **📑 Advanced Table Extraction**: specialized algorithms to extract line items, quantities, and prices from complex invoice layouts.
 - **🔍 Auto-Classification**: Automatically detects document types (Invoice, Receipt, Contract, Purchase Order, etc.).
@@ -27,7 +27,7 @@ A powerful, developer-friendly Laravel package that reads text from images and P
 
 ## 🚀 Installation
 
-Requires PHP 8.2+ and Laravel 10.0+ (compatible with Laravel 11 & 12).
+Requires PHP 8.4+ and Laravel 10.0+ (compatible with Laravel 11 & 12).
 
 ### 1. Install via Composer
 
@@ -40,6 +40,14 @@ composer require mayaram/laravel-ocr
 ```bash
 php artisan vendor:publish --tag=laravel-ocr-config
 php artisan migrate
+```
+
+### 3. Install AI SDK (Optional)
+
+If you plan to use AI cleanup features, ensure you have configured the `laravel/ai` drivers.
+
+```bash
+php artisan install:api
 ```
 
 ---
@@ -71,14 +79,22 @@ AWS_SECRET_ACCESS_KEY=your-secret
 AWS_DEFAULT_REGION=us-east-1
 ```
 
-### AI Cleanup (Optional but Recommended)
+### AI Cleanup (via Laravel AI)
 
-Enable AI to fix scanning errors and structure messy data.
+Enable AI to fix scanning errors and structure messy data. This package uses `laravel/ai` to interface with LLMs.
 
 ```env
 LARAVEL_OCR_AI_CLEANUP=true
-LARAVEL_OCR_AI_PROVIDER=openai
+LARAVEL_OCR_AI_PROVIDER=openai # or anthropic, ollama, etc.
+
+# OpenAI
 OPENAI_API_KEY=sk-...
+
+# Anthropic
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Ollama (Local)
+OLLAMA_API_URL=http://localhost:11434/api
 ```
 
 ---

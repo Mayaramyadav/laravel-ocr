@@ -35,18 +35,18 @@
     }
   ],
   "require": {
-    "php": "^8.2",
+    "php": "^8.4",
     "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
     "thiagoalessio/tesseract_ocr": "^2.12",
     "smalot/pdfparser": "^2.0",
     "intervention/image": "^3.0",
     "guzzlehttp/guzzle": "^7.0",
-    "aws/aws-sdk-php": "^3.369"
-    
+    "aws/aws-sdk-php": "^3.369",
+    "laravel/ai": "^0.1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^10.0|^11.0",
-    "orchestra/testbench": "^8.0|^9.0",
+    "orchestra/testbench": "^8.0|^9.0|^10.0",
     "pestphp/pest": "^3.8",
     "pestphp/pest-plugin-laravel": "^3.2"
 
