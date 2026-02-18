@@ -61,18 +61,81 @@ return [
     'ai_cleanup' => [
         'enabled' => env('LARAVEL_OCR_AI_CLEANUP', false),
         'default_provider' => env('LARAVEL_OCR_AI_PROVIDER', 'openai'),
-        
-        'providers' => [
-            'openai' => [
-                'api_key' => env('OPENAI_API_KEY'),
-                'model' => env('OPENAI_MODEL', 'gpt-3.5-turbo'),
-                'max_tokens' => 2000,
-            ],
-            
-            'anthropic' => [
-                'api_key' => env('ANTHROPIC_API_KEY'),
-                'model' => env('ANTHROPIC_MODEL', 'claude-3-haiku'),
-            ],
+    ],
+    'providers' => [
+        'anthropic' => [
+            'driver' => 'anthropic',
+            'key' => env('ANTHROPIC_API_KEY'),
+        ],
+
+        'azure' => [
+            'driver' => 'azure',
+            'key' => env('AZURE_OPENAI_API_KEY'),
+            'url' => env('AZURE_OPENAI_URL'),
+            'api_version' => env('AZURE_OPENAI_API_VERSION', '2024-10-21'),
+            'deployment' => env('AZURE_OPENAI_DEPLOYMENT', 'gpt-4o'),
+            'embedding_deployment' => env('AZURE_OPENAI_EMBEDDING_DEPLOYMENT', 'text-embedding-3-small'),
+        ],
+
+        'cohere' => [
+            'driver' => 'cohere',
+            'key' => env('COHERE_API_KEY'),
+        ],
+
+        'deepseek' => [
+            'driver' => 'deepseek',
+            'key' => env('DEEPSEEK_API_KEY'),
+        ],
+
+        'eleven' => [
+            'driver' => 'eleven',
+            'key' => env('ELEVENLABS_API_KEY'),
+        ],
+
+        'gemini' => [
+            'driver' => 'gemini',
+            'key' => env('GEMINI_API_KEY'),
+        ],
+
+        'groq' => [
+            'driver' => 'groq',
+            'key' => env('GROQ_API_KEY'),
+        ],
+
+        'jina' => [
+            'driver' => 'jina',
+            'key' => env('JINA_API_KEY'),
+        ],
+
+        'mistral' => [
+            'driver' => 'mistral',
+            'key' => env('MISTRAL_API_KEY'),
+        ],
+
+        'ollama' => [
+            'driver' => 'ollama',
+            'key' => env('OLLAMA_API_KEY', ''),
+            'url' => env('OLLAMA_BASE_URL', 'http://localhost:11434'),
+        ],
+
+        'openai' => [
+            'driver' => 'openai',
+            'key' => env('OPENAI_API_KEY'),
+        ],
+
+        'openrouter' => [
+            'driver' => 'openrouter',
+            'key' => env('OPENROUTER_API_KEY'),
+        ],
+
+        'voyageai' => [
+            'driver' => 'voyageai',
+            'key' => env('VOYAGEAI_API_KEY'),
+        ],
+
+        'xai' => [
+            'driver' => 'xai',
+            'key' => env('XAI_API_KEY'),
         ],
     ],
 
