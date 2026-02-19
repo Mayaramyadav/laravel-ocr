@@ -12,13 +12,14 @@ class CleanupAgent implements Agent, Conversational, HasTools
 {
     use Promptable;
 
-    public function __construct(protected string $documentType = 'general')
-    {
-    }
+    public function __construct(
+        protected string $documentType = 'general',
+        protected ?string $customPrompt = null,
+    ) {}
 
     public function instructions(): Stringable|string
     {
-        return <<<EOT
+        $instructions = <<<EOT
 You are an expert OCR post-processing AI. Your task is to clean and correct OCR-extracted text and fields.
 1. Fix typos and OCR errors (e.g., 'Arnount' -> 'Amount', '1O0' -> '100').
 2. Standardize formats (dates to YYYY-MM-DD, currency to decimal).
@@ -26,6 +27,12 @@ You are an expert OCR post-processing AI. Your task is to clean and correct OCR-
 4. JSON Output: You must return valid JSON matching the input structure.
 Document Type: {$this->documentType}
 EOT;
+
+        if ($this->customPrompt) {
+            $instructions .= "\n\nAdditional Instructions:\n{$this->customPrompt}";
+        }
+
+        return $instructions;
     }
 
     public function messages(): iterable

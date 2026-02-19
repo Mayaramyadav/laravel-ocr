@@ -2,10 +2,8 @@
 
 namespace Mayaram\LaravelOcr\Services;
 
-use Illuminate\Support\Facades\Http;
-use Mayaram\LaravelOcr\Exceptions\AICleanupException;
 use Mayaram\LaravelOcr\Agents\CleanupAgent;
-use Laravel\Ai\Ai;
+use Mayaram\LaravelOcr\Exceptions\AICleanupException;
 
 class AICleanupService
 {
@@ -18,13 +16,13 @@ class AICleanupService
 
     protected function getConfig(string $key, $default = null)
     {
-        return $this->config->get('laravel-ocr.ai_cleanup.' . $key, $default);
+        return $this->config->get('laravel-ocr.ai_cleanup.'.$key, $default);
     }
 
     public function clean(array $extractedData, array $options = []): array
     {
         $provider = $options['provider'] ?? $this->getConfig('default_provider', 'openai');
-        
+
         if ($provider === 'basic') {
             return $this->cleanWithBasicRules($extractedData, $options);
         }
@@ -35,52 +33,68 @@ class AICleanupService
     public function correctTypos($text): string
     {
         $corrections = $this->getCommonCorrections();
-        
+
         foreach ($corrections as $typo => $correction) {
-            $text = preg_replace('/\b' . preg_quote($typo, '/') . '\b/i', $correction, $text);
+            $text = preg_replace('/\b'.preg_quote($typo, '/').'\b/i', $correction, $text);
         }
-        
+
         $text = $this->fixOCRPatterns($text);
-        
+
         return $text;
     }
 
     protected function cleanWithAiSdk(array $data, array $options): array
     {
         try {
-            $agent = new CleanupAgent($options['document_type'] ?? 'general');
-            
+            $agent = new CleanupAgent(
+                documentType: $options['document_type'] ?? 'general',
+                customPrompt: $options['custom_prompt'] ?? $this->getConfig('custom_prompt'),
+            );
+
             $provider = $options['provider'] === 'local' ? 'ollama' : $options['provider'];
             $model = $options['model'] ?? null;
+
+            \Log::info('Starting AI Cleanup', [
+                'provider' => $provider,
+                'model' => $model,
+                'data_size' => strlen(json_encode($data)),
+                'custom_prompt' => $options['custom_prompt'] ?? 'none',
+            ]);
 
             $response = $agent->prompt(
                 prompt: json_encode($data),
                 provider: $provider,
                 model: $model,
+                timeout: $options['timeout'] ?? $this->getConfig('timeout', 60),
             );
-            
+
+            \Log::info('AI Cleanup Response received', [
+                'response_length' => strlen($response->text),
+            ]);
+
             $text = $response->text;
-            
+
             if (preg_match('/```json\s*(\{.*\})\s*```/s', $text, $matches)) {
                 $text = $matches[1];
             } elseif (preg_match('/(\{.*\})/s', $text, $matches)) {
                 $text = $matches[1];
             }
-            
+
             return json_decode($text, true) ?? $data;
         } catch (\Exception $e) {
-            throw new AICleanupException('AI cleanup failed: ' . $e->getMessage(), 0, $e);
+            \Log::error('AI cleanup failed: '.$e->getMessage(), ['exception' => $e]);
+            throw new AICleanupException('AI cleanup failed: '.$e->getMessage(), 0, $e);
         }
     }
 
     protected function cleanWithBasicRules(array $data, array $options): array
     {
         $cleaned = $data;
-        
+
         if (isset($cleaned['text'])) {
             $cleaned['text'] = $this->correctTypos($cleaned['text']);
         }
-        
+
         if (isset($cleaned['fields'])) {
             foreach ($cleaned['fields'] as $key => &$field) {
                 if (is_array($field) && isset($field['value'])) {
@@ -90,40 +104,40 @@ class AICleanupService
                 }
             }
         }
-        
+
         return $cleaned;
     }
 
     protected function cleanFieldValue($value, $type): string
     {
         $value = trim($value);
-        
+
         switch ($type) {
             case 'number':
             case 'numeric':
                 $value = preg_replace('/[^0-9.,\-]/', '', $value);
                 $value = str_replace(',', '', $value);
                 break;
-                
+
             case 'date':
                 $value = $this->normalizeDate($value);
                 break;
-                
+
             case 'currency':
                 $value = preg_replace('/[^0-9.,\-]/', '', $value);
-                $value = number_format((float)str_replace(',', '', $value), 2, '.', '');
+                $value = number_format((float) str_replace(',', '', $value), 2, '.', '');
                 break;
-                
+
             case 'email':
                 $value = strtolower(trim($value));
                 $value = filter_var($value, FILTER_SANITIZE_EMAIL);
                 break;
-                
+
             case 'phone':
                 $value = preg_replace('/[^0-9]/', '', $value);
                 break;
         }
-        
+
         return $value;
     }
 
@@ -135,23 +149,23 @@ class AICleanupService
             '/\bl\b(?=\s*[0-9])/i' => '1',
             '/\bO\b(?=\s*[0-9])/i' => '0',
         ];
-        
+
         foreach ($patterns as $pattern => $replacement) {
             $text = preg_replace($pattern, $replacement, $text);
         }
-        
+
         return $text;
     }
 
     protected function normalizeDate($date): string
     {
         $timestamp = strtotime($date);
-        
+
         if ($timestamp === false) {
             $date = preg_replace('/[^\d\/\-\.]/', '', $date);
             $timestamp = strtotime($date);
         }
-        
+
         return $timestamp !== false ? date('Y-m-d', $timestamp) : $date;
     }
 

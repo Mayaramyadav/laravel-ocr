@@ -2,9 +2,13 @@
 
 namespace Mayaram\LaravelOcr\Drivers;
 
+use Google\Cloud\Vision\V1\AnnotateImageRequest;
+use Google\Cloud\Vision\V1\BatchAnnotateImagesRequest;
+use Google\Cloud\Vision\V1\Client\ImageAnnotatorClient;
+use Google\Cloud\Vision\V1\Feature;
+use Google\Cloud\Vision\V1\Image;
 use Mayaram\LaravelOcr\Contracts\OCRDriver;
 use Mayaram\LaravelOcr\Exceptions\OCRException;
-use Google\Cloud\Vision\V1\ImageAnnotatorClient;
 
 class GoogleVisionDriver implements OCRDriver
 {
@@ -20,50 +24,97 @@ class GoogleVisionDriver implements OCRDriver
         $this->ensureSdkInstalled();
 
         try {
-            $imageAnnotator = new ImageAnnotatorClient($this->config);
-            $imageContent = file_get_contents($document);
-            $response = $imageAnnotator->textDetection($imageContent);
-            $texts = $response->getTextAnnotations();
+            $clientConfig = $this->config;
 
-            if (empty($texts)) {
-                return [
-                    'text' => '',
-                    'confidence' => 0.0,
-                    'bounds' => [],
-                    'metadata' => ['engine' => 'google_vision']
-                ];
+            // Map 'key_file' or 'json_key' to 'credentials' if present
+            if (isset($this->config['key_file'])) {
+                $keyFile = $this->config['key_file'];
+
+                // Try to resolve relative path if file doesn't exist
+                if (! file_exists($keyFile) && function_exists('base_path') && file_exists(base_path($keyFile))) {
+                    $keyFile = base_path($keyFile);
+                }
+
+                if (file_exists($keyFile)) {
+                    $clientConfig['credentials'] = $keyFile;
+                }
+            }
+
+            // If key_file didn't work/wasn't provided, try json_key
+            if (! isset($clientConfig['credentials']) && isset($this->config['json_key'])) {
+                $clientConfig['credentials'] = is_array($this->config['json_key'])
+                    ? $this->config['json_key']
+                    : json_decode($this->config['json_key'], true);
+            }
+
+            $imageAnnotator = new ImageAnnotatorClient($clientConfig);
+            $imageContent = file_get_contents($document);
+
+            // Create the request using GAPIC objects
+            $image = (new Image)->setContent($imageContent);
+            $feature = (new Feature)->setType(Feature\Type::TEXT_DETECTION);
+
+            $request = (new AnnotateImageRequest)
+                ->setImage($image)
+                ->setFeatures([$feature]);
+
+            // Create the batch request
+            $batchRequest = (new BatchAnnotateImagesRequest())
+                ->setRequests([$request]);
+
+            // Call the correct method: batchAnnotateImages
+            $response = $imageAnnotator->batchAnnotateImages($batchRequest);
+
+            // Validate response
+            if ($response->getResponses()->count() === 0) {
+                return $this->emptyResult();
+            }
+
+            $annotateImageResponse = $response->getResponses()[0];
+
+            if ($annotateImageResponse->hasError()) {
+                throw new \Exception($annotateImageResponse->getError()->getMessage());
+            }
+
+            $texts = $annotateImageResponse->getTextAnnotations();
+
+            if (count($texts) === 0) {
+                return $this->emptyResult();
             }
 
             // The first annotation contains the entire text
             $fullText = $texts[0]->getDescription();
-            
-            // Calculate average confidence if available (Google Vision doesn't always provide simple confidence for full text)
-            // We can iterate over pages/blocks to get confidence, but for now we'll simplify.
-            
+
             $imageAnnotator->close();
 
             return [
                 'text' => $fullText,
-                'confidence' => 0.0, // Google Vision API structure is complex for single confidence score
-                'bounds' => [], // Parsing bounds is complex, leaving empty for now
+                'confidence' => 0.0, // Google Vision API doesn't provide a single confidence score for the whole text
+                'bounds' => [], // Parsing bounds omitted for brevity
                 'metadata' => [
                     'engine' => 'google_vision',
-                    'processing_time' => microtime(true) - LARAVEL_START
-                ]
+                    'processing_time' => microtime(true) - LARAVEL_START,
+                ],
             ];
 
         } catch (\Exception $e) {
-            throw new OCRException("Google Vision extraction failed: " . $e->getMessage());
+            \Log::error('Google Vision extraction failed: '.$e->getMessage(), ['exception' => $e]);
+            throw new OCRException('Google Vision extraction failed: '.$e->getMessage());
         }
+    }
+
+    protected function emptyResult(): array
+    {
+        return [
+            'text' => '',
+            'confidence' => 0.0,
+            'bounds' => [],
+            'metadata' => ['engine' => 'google_vision'],
+        ];
     }
 
     public function extractTable($document, array $options = []): array
     {
-        // Google Vision doesn't have a dedicated "Table" extraction in the basic TextDetection.
-        // It returns blocks/paragraphs.
-        // For now, we fall back to raw text extraction or throw specific exception if strict table needed.
-        // Implementation similar to Tesseract's simple line splitting for now.
-        
         $extraction = $this->extract($document, $options);
         $lines = explode("\n", $extraction['text']);
         $table = [];
@@ -78,23 +129,22 @@ class GoogleVisionDriver implements OCRDriver
         return [
             'table' => $table,
             'raw_text' => $extraction['text'],
-            'metadata' => $extraction['metadata']
+            'metadata' => $extraction['metadata'],
         ];
     }
 
     public function extractBarcode($document, array $options = []): array
     {
-        throw new OCRException("Barcode extraction not supported by Google Vision driver directly. Use a specialized library.");
+        throw new OCRException('Barcode extraction not supported by Google Vision driver directly. Use a specialized library.');
     }
 
     public function extractQRCode($document, array $options = []): array
     {
-        throw new OCRException("QR code extraction not supported by Google Vision driver directly. Use a specialized library.");
+        throw new OCRException('QR code extraction not supported by Google Vision driver directly. Use a specialized library.');
     }
 
     public function getSupportedLanguages(): array
     {
-        // Google Vision supports auto-detection, but here are some common ones
         return [
             'en' => 'English',
             'es' => 'Spanish',
@@ -118,9 +168,9 @@ class GoogleVisionDriver implements OCRDriver
 
     protected function ensureSdkInstalled(): void
     {
-        if (!class_exists(ImageAnnotatorClient::class)) {
+        if (! class_exists(ImageAnnotatorClient::class)) {
             throw new OCRException(
-                "Google Cloud Vision SDK not installed. Please install it via composer: composer require google/cloud-vision"
+                'Google Cloud Vision SDK not installed. Please install it via composer: composer require google/cloud-vision'
             );
         }
     }

@@ -31,6 +31,7 @@ class OCRManager extends Manager
         return new AzureOCRDriver($this->config->get('laravel-ocr.drivers.azure', []));
     }
 
+
     public function getDefaultDriver()
     {
         return $this->config->get('laravel-ocr.default', 'tesseract');

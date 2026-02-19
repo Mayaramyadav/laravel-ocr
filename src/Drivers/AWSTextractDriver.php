@@ -55,6 +55,7 @@ class AWSTextractDriver implements OCRDriver
             ];
 
         } catch (\Exception $e) {
+            \Log::error('AWS Textract extraction failed: '.$e->getMessage(), ['exception' => $e]);
             throw new OCRException("AWS Textract extraction failed: " . $e->getMessage());
         }
     }
@@ -85,6 +86,7 @@ class AWSTextractDriver implements OCRDriver
             ];
 
         } catch (\Exception $e) {
+            \Log::error('AWS Textract table extraction failed: '.$e->getMessage(), ['exception' => $e]);
             throw new OCRException("AWS Textract table extraction failed: " . $e->getMessage());
         }
     }

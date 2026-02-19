@@ -74,6 +74,7 @@ class DocumentParser
             );
 
         } catch (\Exception $e) {
+            \Log::error('DocumentParser error: '.$e->getMessage(), ['exception' => $e]);
             throw new DocumentParserException($e->getMessage(), 0, $e);
         } finally {
             if (isset($documentPath) && $documentPath !== $document && file_exists($documentPath)) {
@@ -416,6 +417,7 @@ class DocumentParser
                 'pdf_creation_date' => isset($details['CreationDate']) ? date('Y-m-d H:i:s', strtotime($details['CreationDate'])) : null,
             ];
         } catch (\Exception $e) {
+            \Log::error('PDF metadata extraction failed: '.$e->getMessage());
             return [];
         }
     }

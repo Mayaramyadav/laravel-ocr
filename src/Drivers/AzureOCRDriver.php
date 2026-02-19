@@ -67,6 +67,7 @@ class AzureOCRDriver implements OCRDriver
             ];
 
         } catch (\Exception $e) {
+            \Log::error('Azure OCR extraction failed: '.$e->getMessage(), ['exception' => $e]);
             throw new OCRException("Azure OCR extraction failed: " . $e->getMessage());
         }
     }

@@ -10,6 +10,10 @@ A powerful, developer-friendly Laravel package that reads text from images and P
 
 > **Why this package?** Most OCR tools just give you a dump of raw text. This package gives you **typed DTOs**, **structured fields**, and **confidence scores**. It knows the difference between an Invoice Number and a Phone Number.
 
+## 📸 Demo
+
+![Laravel OCR Demo](docs/images/demo-upload.png)
+
 ---
 
 ## 📑 Table of Contents
@@ -216,6 +220,9 @@ Enable AI-powered OCR post-processing to fix scanning errors and normalize data 
 ```env
 LARAVEL_OCR_AI_CLEANUP=true
 LARAVEL_OCR_AI_PROVIDER=openai
+LARAVEL_OCR_AI_TIMEOUT=60
+# Optional: Set a default custom prompt for all AI cleanup calls
+# LARAVEL_OCR_AI_CUSTOM_PROMPT="Extract all amounts in INR. Format names in Title Case."
 ```
 
 #### Supported AI Providers
@@ -454,6 +461,7 @@ $result = LaravelOcr::driver('aws_textract')->extract($document);
 
 // Switch to Google Vision
 $result = LaravelOcr::driver('google_vision')->extract($document);
+
 ```
 
 ### 8. Document Metadata Extraction
@@ -736,6 +744,28 @@ The agent is instructed to:
 2. Standardize formats (dates to `YYYY-MM-DD`, currency to decimal)
 3. Preserve values it can't confidently fix
 4. Return valid JSON matching the input structure
+
+### Custom Prompt
+
+You can pass additional instructions to the AI cleanup agent to customize its behavior:
+
+```php
+// Per-call custom prompt
+$result = $parser->parse($document, [
+    'use_ai_cleanup' => true,
+    'custom_prompt' => 'Extract all amounts in INR. Normalize phone numbers to +91 format.',
+]);
+```
+
+Or set a default custom prompt in `config/laravel-ocr.php`:
+
+```php
+'ai_cleanup' => [
+    'custom_prompt' => 'Always extract Hindi text. Format dates as DD/MM/YYYY.',
+],
+```
+
+> The custom prompt is appended as **"Additional Instructions"** to the default cleanup prompt, so the base OCR correction behavior is always preserved.
 
 ---
 

@@ -33,6 +33,7 @@ return [
 
         'google_vision' => [
             'key_file' => env('GOOGLE_VISION_KEY_FILE'),
+            'json_key' => env('GOOGLE_VISION_JSON_KEY'),
             'project_id' => env('GOOGLE_VISION_PROJECT_ID'),
         ],
 
@@ -61,6 +62,7 @@ return [
     'ai_cleanup' => [
         'enabled' => env('LARAVEL_OCR_AI_CLEANUP', false),
         'default_provider' => env('LARAVEL_OCR_AI_PROVIDER', 'openai'),
+        'timeout' => env('LARAVEL_OCR_AI_TIMEOUT', 60),
     ],
     'providers' => [
         'anthropic' => [
