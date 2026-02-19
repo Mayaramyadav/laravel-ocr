@@ -12,6 +12,55 @@ A powerful, developer-friendly Laravel package that reads text from images and P
 
 ---
 
+## 📑 Table of Contents
+
+- [✨ Features](#-features)
+- [📐 Architecture](#-architecture)
+- [🚀 Installation](#-installation)
+  - [Install via Composer](#1-install-via-composer)
+  - [Publish Configuration & Assets](#2-publish-configuration--assets)
+  - [Publish Views (Optional)](#3-publish-views-optional)
+  - [Install Tesseract (Default Driver)](#4-install-tesseract-default-driver)
+- [⚙️ Configuration](#️-configuration)
+  - [OCR Driver Selection](#ocr-driver-selection)
+  - [Tesseract](#tesseract-offline--privacy-first--default)
+  - [Google Cloud Vision](#google-cloud-vision)
+  - [AWS Textract](#aws-textract)
+  - [Azure Computer Vision](#azure-computer-vision)
+  - [AI Cleanup (via Laravel AI SDK)](#ai-cleanup-via-laravel-ai-sdk)
+  - [Queue Configuration](#queue-configuration)
+  - [Storage & Security](#storage--security)
+- [📖 Usage](#-usage)
+  - [Simple Text Extraction](#1-simple-text-extraction)
+  - [Smart Parsing (Structured Data via OcrResult DTO)](#2-smart-parsing-structured-data-via-ocrresult-dto)
+  - [Batch Processing](#3-batch-processing)
+  - [Working with Line Items & Tables](#4-working-with-line-items--tables)
+  - [Templates](#5-templates)
+  - [Workflows](#6-workflows)
+  - [Switching Drivers at Runtime](#7-switching-drivers-at-runtime)
+  - [Document Metadata Extraction](#8-document-metadata-extraction)
+  - [Working with Processed Documents](#9-working-with-processed-documents)
+- [🖥️ Artisan Commands](#️-artisan-commands)
+  - [Create a Template](#create-a-template)
+  - [Process a Document](#process-a-document)
+- [🎨 Blade Component](#-blade-component)
+- [🗄️ Database Schema](#️-database-schema)
+- [🧩 OCR Driver Interface](#-ocr-driver-interface)
+  - [Supported Formats by Driver](#supported-formats-by-driver)
+  - [Building a Custom Driver](#building-a-custom-driver)
+- [🤖 AI Cleanup Details](#-ai-cleanup-details)
+  - [Basic Rules (No API Required)](#basic-rules-no-api-required)
+  - [AI-Powered Cleanup (via Laravel AI SDK)](#ai-powered-cleanup-via-laravel-ai-sdk)
+- [🧪 Testing](#-testing)
+- [📄 API Reference](#-api-reference)
+  - [LaravelOcr Facade](#laravelocr-facade-via-ocrmanager)
+  - [DocumentParser](#documentparser-via-applaravel-ocrparser)
+  - [OcrResult DTO](#ocrresult-dto)
+  - [TemplateManager](#templatemanager-via-applaravel-ocrtemplates)
+- [📄 License](#-license)
+
+---
+
 ## ✨ Features
 
 - **🧠 Multi-Driver OCR Engine**: Seamlessly switch between **Tesseract** (offline/privacy-first), **Google Cloud Vision**, **AWS Textract**, or **Azure Computer Vision** drivers.
